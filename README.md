@@ -1,122 +1,91 @@
-# Sequelize Paper Trail
+# Sequelize Revision
 
+> Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript).
 
----
+[![node-version](https://img.shields.io/node/v/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
+[![npm-version](https://img.shields.io/npm/v/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
+[![npm-downloads](https://img.shields.io/npm/dt/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
+[![license](https://img.shields.io/github/license/yujiosaka/sequelize-revision.svg)](https://github.com/yujiosaka/sequelize-revision/blob/master/LICENSE)
 
-> **Help wanted:** *Please try out `sequelize-paper-trail@3.0.0-rc.6` and give a 👍/👎 [here](https://github.com/nielsgl/sequelize-paper-trail/pull/74) if it works as expected.*
-
----
-
-
-> Track changes to your models, for auditing or versioning. See how a model looked at any stage in its lifecycle, revert it to any version, or restore it after it has been destroyed. Record the user who created the version.
-
-
-
-<!-- [![NPM](https://nodei.co/npm/sequelize-paper-trail.png?downloads=true)](https://nodei.co/npm/sequelize-paper-trail/) -->
-
-[![node-version](https://img.shields.io/node/v/sequelize-paper-trail.svg)](https://www.npmjs.org/package/sequelize-paper-trail)
-[![npm-version](https://img.shields.io/npm/v/sequelize-paper-trail.svg)](https://www.npmjs.org/package/sequelize-paper-trail)
-[![David](https://img.shields.io/david/nielsgl/sequelize-paper-trail.svg?maxAge=3600)]()
-[![David](https://img.shields.io/david/dev/nielsgl/sequelize-paper-trail.svg?maxAge=3600)]()
-
-[![GitHub release](https://img.shields.io/github/release/nielsgl/sequelize-paper-trail.svg)](https://www.npmjs.org/package/sequelize-paper-trail)
-[![GitHub tag](https://img.shields.io/github/tag/nielsgl/sequelize-paper-trail.svg)](https://www.npmjs.org/package/sequelize-paper-trail)
-[![GitHub commits](https://img.shields.io/github/commits-since/nielsgl/sequelize-paper-trail/1.2.0.svg)]()
-[![npm-downloads](https://img.shields.io/npm/dt/sequelize-paper-trail.svg)](https://www.npmjs.org/package/sequelize-paper-trail)
-
-[![license](https://img.shields.io/github/license/nielsgl/sequelize-paper-trail.svg)](https://github.com/nielsgl/sequelize-paper-trail/blob/master/LICENSE)
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
 
-- [Sequelize Paper Trail](#sequelize-paper-trail)
-	- [Table of Contents](#table-of-contents)
-	- [Installation](#installation)
-	- [Usage](#usage)
-		- [Example](#example)
-	- [User Tracking](#user-tracking)
-	- [Options](#options)
-		- [Default options](#default-options)
-		- [Options documentation](#options-documentation)
-	- [Limitations](#limitations)
-	- [Testing](#testing)
-	- [Support](#support)
-	- [Contributing](#contributing)
-	- [Author](#author)
-	- [Thanks](#thanks)
-	- [Links](#links)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Example](#example)
+- [User Tracking](#user-tracking)
+- [Options](#options)
+    - [Default options](#default-options)
+    - [Options documentation](#options-documentation)
+- [Limitations](#limitations)
+- [Testing](#testing)
+- [Thanks](#thanks)
 
 ## Installation
 
 ```bash
-npm install --save sequelize-paper-trail
-# or with yarn:
-# yarn add sequelize-paper-trail
+$ npm install --save sequelize-revision
 ```
-
-*Note: the current test suite is very limited in coverage.*
 
 ## Usage
 
-Sequelize Paper Trail assumes that you already set up your Sequelize connection, for example, like this:
-```javascript
-const Sequelize = require('sequelize');
+Sequelize Revision assumes that you already set up your Sequelize connection, for example, like this:
+```typescript
+import Sequelize from 'sequelize';
+
 const sequelize = new Sequelize('database', 'username', 'password');
 ```
 
-then adding Sequelize Paper Trail is as easy as:
+then adding Sequelize Revision is as easy as:
 
-```javascript
-const PaperTrail = require('sequelize-paper-trail').init(sequelize, options);
-PaperTrail.defineModels();
+```typescript
+import { SequelizeRevision } from 'sequelize-revision';
+
+const sequelizeRevision = new SequelizeRevision(sequelize, options);
+const { Revision } = await sequelizeRevision.defineModels();
 ```
 
-which loads the Paper Trail library, and the `defineModels()` method sets up a `Revisions` and `RevisionHistory` table.
+which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revisions` and `RevisionChanges` table.
 
-*Note: If you pass `userModel` option to `init` in order to enable user tracking, `userModel` should be setup before `defineModels()` is called.*
+*Note: If you pass `userModel` option to the constructor in order to enable user tracking, `userModel` should be setup before `defineModels()` is called.*
 
 Then for each model that you want to keep a paper trail you simply add:
 
-```javascript
-Model.hasPaperTrail();
+```typescript
+await sequelizeRevision.trackRevision(Model);
 ```
-
-`hasPaperTrail` returns the `hasMany` association to the `revisionModel` so you can keep track of the association for reference later.
 
 ### Example
 
-```javascript
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('database', 'username', 'password');
+```typescript
+import Sequelize from 'sequelize';
+import { SequelizeRevision } from 'sequelize-revision';
 
-const PaperTrail = require('sequelize-paper-trail').init(sequelize, options || {});
-PaperTrail.defineModels();
+const sequelize = new Sequelize('database', 'username', 'password');
+const sequelizeRevision = new SequelizeRevision(sequelize, options || {});
+await sequelizeRevision.defineModels();
 
 const User = sequelize.define('User', {
   username: Sequelize.STRING,
   birthday: Sequelize.DATE
 });
 
-User.Revisions = User.hasPaperTrail();
+await sequelizeRevision.trackRevision(User);
 ```
 
 ## User Tracking
 
 There are 2 steps to enable user tracking, ie, recording the user who created a particular revision.
-1. Enable user tracking by passing `userModel` option to `init`, with the name of the model which stores users in your application as the value.
+1. Enable user tracking by passing `userModel` option to the constructor, with the name of the model which stores users in your application as the value.
 
-```javascript
+```typescript
 const options = {
   /* ... */
   userModel: 'user',
 };
 ```
-2. Pass the id of the user who is responsible for the database operation to `sequelize-paper-trail` either by sequelize options or by using [continuation-local-storage](https://www.npmjs.com/package/continuation-local-storage).
+2. Pass the id of the user who is responsible for the database operation to `sequelize-revision` either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
 
-```javascript
+```typescript
 Model.update({
   /* ... */
 }, {
@@ -127,8 +96,8 @@ Model.update({
 ```
 OR
 
-```javascript
-const createNamespace = require('continuation-local-storage').createNamespace;
+```typescript
+const createNamespace = require('cls-hooked').createNamespace;
 const session = createNamespace('my session');
 
 session.set('userId', user.id);
@@ -141,57 +110,62 @@ Model.update({
 
 ```
 
-To enable continuation-local-storage set `continuationNamespace` in initialization options.
-Additionally, you may also have to call `.run()` or `.bind()` on your cls namespace, as described in the [docs](https://www.npmjs.com/package/continuation-local-storage).
+To enable cls-hooked set `continuationNamespace` in initialization options.
+Additionally, you may also have to call `.run()` or `.bind()` on your cls namespace, as described in the [docs](https://www.npmjs.com/package/cls-hooked).
 
 ## Disable logging for a single call
 
-To not log a specific change to a revisioned object, just pass a `noPaperTrail` with a truthy (true, 1, ' ') value.
+To not log a specific change to a revisioned object, just pass a `noRevision` with `true` value.
 
-```javascript
+```typescript
 const instance = await Model.findOne();
-instance.update({ noPaperTrail: true }).then(() {
+instance.update({ noRevision: true }).then(() {
   /* ... */
 });
 ```
 
 ## Options
 
-Paper Trail supports various options that can be passed into the initialization. The following are the default options:
+Sequelize Revision supports various options that can be passed into the initialization. The following are the default options:
 
 ### Default options
 
-```javascript
+```typescript
 // Default options
-const options = {
+  debug: false,
+  log: undefined,
   exclude: [
-    'id',
-    'createdAt',
-    'updatedAt',
-    'deletedAt',
-    'created_at',
-    'updated_at',
-    'deleted_at'
+    "id",
+    "createdAt",
+    "updatedAt",
+    "deletedAt",
+    "created_at",
+    "updated_at",
+    "deleted_at",
+    "revision",
   ],
-  revisionAttribute: 'revision',
-  revisionModel: 'Revision',
-  revisionChangeModel: 'RevisionChange',
+  revisionAttribute: "revision",
+  revisionModel: "Revision",
+  revisionChangeModel: "RevisionChange",
   enableRevisionChangeModel: false,
   UUID: false,
   underscored: false,
   underscoredAttributes: false,
   defaultAttributes: {
-    documentId: 'documentId',
-    revisionId: 'revisionId'
+    documentId: "documentId",
+    revisionId: "revisionId",
   },
+  userModel: undefined,
+  userModelAttribute: "userId",
   enableCompression: false,
   enableMigration: false,
   enableStrictDiff: true,
-  continuationKey: 'userId',
-  belongsToUserOptions: undefined,
+  continuationNamespace: undefined,
+  continuationKey: "userId",
   metaDataFields: undefined,
-  metaDataContinuationKey: 'metaData'
-};
+  metaDataContinuationKey: "metaData",
+  tableName: undefined,
+  belongsToUserOptions: undefined,
 ```
 
 ### Options documentation
@@ -213,11 +187,11 @@ const options = {
 | [enableCompression]         | Boolean | false                                                                                                                | Compresses the revision attribute in the [revisionModel] to only the diff instead of all model attributes.                                                                                                             |
 | [enableMigration]           | Boolean | false                                                                                                                | Automatically adds the [revisionAttribute] via a migration to the models that have paper trails enabled.                                                                                                               |
 | [enableStrictDiff]          | Boolean | true                                                                                                                 | Reports integers and strings as different, e.g. `3.14` !== `'3.14'`                                                                                                                                                    |
-| [continuationNamespace]     | String  |                                                                                                                      | Name of the name space used with the continuation-local-storage module.                                                                                                                                                |
-| [continuationKey]           | String  | 'userId'                                                                                                             | The continuation-local-storage key that contains the user id.                                                                                                                                                          |
+| [continuationNamespace]     | String  |                                                                                                                      | Name of the name space used with the cls-hooked module.                                                                                                                                                |
+| [continuationKey]           | String  | 'userId'                                                                                                             | The cls-hooked key that contains the user id.                                                                                                                                                          |
 | [belongsToUserOptions]      | Object  | undefined                                                                                                            | The options used for belongsTo between userModel and Revision model                                                                                                                                                    |
 | [metaDataFields]            | Object  | undefined                                                                                                            | The keys that will be provided in the meta data object. { key: isRequired (boolean)} format. Can be used to privovide additional fields - other associations, dates, etc to the Revision model                         |
-| [metaDataContinuationKey]   | String  | 'metaData'                                                                                                           | The continuation-local-storage key that contains the meta data object, from where the metaDataFields are extracted.                                                                                                    |
+| [metaDataContinuationKey]   | String  | 'metaData'                                                                                                           | The cls-hooked key that contains the meta data object, from where the metaDataFields are extracted.                                                                                                    |
 
 ## Limitations
 
@@ -229,37 +203,9 @@ The tests are designed to run on SQLite3 in-memory tables, built from Sequelize 
 
 ```bash
 npm test
-# or with yarn:
-# yarn test
 ```
-
-## Support
-
-Please use:
-* GitHub's [issue tracker](https://github.com/nielsgl/sequelize-paper-trail/issues)
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
-
-## Author
-
-© [Niels van Galen Last](https://nielsgl.com) – [@nielsgl](https://twitter.com/nielsgl) – nvangalenlast@gmail.com
-Distributed under the MIT license. See ``LICENSE`` for more information.
-[https://github.com/nielsgl/sequelize-paper-trail](https://github.com/nielsgl/)
 
 ## Thanks
 
 This project was inspired by:
-* [Sequelize-Revisions](https://github.com/bkniffler/sequelize-revisions)
-* [Paper Trail](https://github.com/airblade/paper_trail)
-
-Contributors:
- [https://github.com/nielsgl/sequelize-paper-trail/graphs/contributors](https://github.com/nielsgl/sequelize-paper-trail/graphs/contributors)
-
-## Links
-* [Example application](https://github.com/nielsgl/sequelize-paper-trail-example)
+* [Sequelize Paper Trail](https://github.com/nielsgl/sequelize-paper-trail)

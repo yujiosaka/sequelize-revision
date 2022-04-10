@@ -1,0 +1,5 @@
+.circleci
+.husky
+dist
+docs
+README.md

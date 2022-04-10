@@ -1,43 +1,24 @@
-# Javascript Node CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-javascript/ for more details
-#
-version: 2
+version: 2.1
+orbs:
+  node: circleci/node@4.7
 jobs:
-    build:
-        docker:
-            # specify the version you desire here
-            - image: circleci/node:12.7.0
+  release:
+    executor:
+        name: node/default
+        tag: '17.0.0'
+    steps:
+      - checkout
+      - node/install-packages
+      - run: npx eslint .
+      - run: npx prettier --check .
+      - run: npx semantic-release
 
-            # Specify service dependencies here if necessary
-            # CircleCI maintains a library of pre-built images
-            # documented at https://circleci.com/docs/2.0/circleci-images/
-            # - image: circleci/mongo:3.4.4
-
-        working_directory: ~/repo
-
-        steps:
-            - checkout
-
-            # Download and cache dependencies
-            - restore_cache:
-                  keys:
-                      - v1-dependencies-{{ checksum "package.json" }}
-                      # fallback to using the latest cache if no exact match is found
-                      - v1-dependencies-
-
-            - run: npm install
-            # - run: npm install --save-dev sqlite3
-
-            # - run: npm rebuild
-
-            - save_cache:
-                  paths:
-                      - node_modules
-                  key: v1-dependencies-{{ checksum "package.json" }}
-
-            # run lint
-            # - run: npm run lint
-
-            # run tests!
-            - run: npm run test -- --runInBand
+workflows:
+  test_and_release:
+    jobs:
+      - node/test:
+          version: '17.0.0'
+          pkg-manager: npm
+      - release:
+          requires:
+            - node/test
