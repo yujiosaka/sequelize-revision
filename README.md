@@ -1,10 +1,19 @@
 # Sequelize Revision
 
-> Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript).
-
 [![npm-version](https://img.shields.io/npm/v/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
 [![npm-downloads](https://img.shields.io/npm/dt/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
+[![CircleCI](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master.svg?style=shield)](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master)
 [![license](https://img.shields.io/github/license/yujiosaka/sequelize-revision.svg)](https://github.com/yujiosaka/sequelize-revision/blob/master/LICENSE)
+
+###### [Code of Conduct](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CODE_OF_CONDUCT.md) | [Contributing](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CONTRIBUTING.md) | [Changelog](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CHANGELOG.md)
+
+> Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript).
+
+Sequelize Revision a fork from [Sequelize Paper Trail](https://github.com/nielsgl/sequelize-paper-trail) supporting the same options and providing consistent behavior with following improvements:
+
+- Re-written in TypeScript and support type checks
+- Working well with or without [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
+- Better coverage in unit tests
 
 ## Table of Contents
 
@@ -15,9 +24,9 @@
 - [Options](#options)
     - [Default options](#default-options)
     - [Options documentation](#options-documentation)
+- [Troubleshooting](#troubleshooting)
 - [Limitations](#limitations)
 - [Testing](#testing)
-- [Thanks](#thanks)
 
 ## Installation
 
@@ -192,19 +201,58 @@ Sequelize Revision supports various options that can be passed into the initiali
 | [metaDataFields]            | Object  | undefined                                                                                                            | The keys that will be provided in the meta data object. { key: isRequired (boolean)} format. Can be used to privovide additional fields - other associations, dates, etc to the Revision model                         |
 | [metaDataContinuationKey]   | String  | 'metaData'                                                                                                           | The cls-hooked key that contains the meta data object, from where the metaDataFields are extracted.                                                                                                    |
 
+## Troubleshooting
+
+- [Revisions are not loggeed when running bulk operations](#revisions-are-not-loggeed-when-running-bulk-operations)
+
+### Revisions are not loggeed when running bulk operations
+
+Sequelize Revision logs records when [hooks](https://sequelize.org/docs/v6/other-topics/hooks/) (also known as lifecycle events) are triggered in Sequelize.
+
+By default, hooks are not triggered when you run bulk operations as below
+
+```typescript
+await Model.bulkCreate([
+  { name: "sequelize-paper-trail", version: 1 },
+  { name: "sequelize-revision", version: 1 },
+]);
+
+await Model.update({ version: 2 }, {
+  where: { version: 1 },
+});
+
+await Model.destroy({
+  where: { version: 1 },
+});
+```
+
+In order to log revisions for those bulk operations, pass `individualHooks: true` option for triggering hooks.
+
+```typescript
+await Model.bulkCreate([
+  { name: "sequelize-paper-trail", version: 1 },
+  { name: "sequelize-revision", version: 1 },
+], { individualHooks: true });
+
+await Model.update({ version: 2 }, {
+  where: { version: 1 },
+  individualHooks: true
+});
+
+await Model.destroy({
+  where: { version: 1 },
+  individualHooks: true,
+});
+```
+
 ## Limitations
 
-* This project does not support models with composite primary keys. You can work around using a unique index with multiple fields.
+- This project does not support models with composite primary keys. You can work around using a unique index with multiple fields.
 
 ## Testing
 
-The tests are designed to run on SQLite3 in-memory tables, built from Sequelize migration files. If you want to actually generate a database file, change the storage option to a filename and run the tests. 
+The tests are designed to run on SQLite3 in-memory tables, built from Sequelize migration files.
 
 ```bash
-npm test
+$ npm test
 ```
-
-## Thanks
-
-This project was inspired by:
-* [Sequelize Paper Trail](https://github.com/nielsgl/sequelize-paper-trail)
