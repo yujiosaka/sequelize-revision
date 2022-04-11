@@ -1,20 +1,20 @@
-module.export = {
-  plugins: [
+{
+  "plugins": [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     [
       "@semantic-release/changelog",
       {
-        changelogFile: "docs/CHANGELOG.md",
-      },
+        "changelogFile": "docs/CHANGELOG.md"
+      }
     ],
     "@semantic-release/npm",
     [
       "@semantic-release/git",
       {
-        assets: ["docs/CHANGELOG.md", "package.json"],
-      },
+        "assets": ["docs/CHANGELOG.md", "package.json"]
+      }
     ],
-    "@semantic-release/github",
-  ],
-};
+    "@semantic-release/github"
+  ]
+}
