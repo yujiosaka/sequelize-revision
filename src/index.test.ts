@@ -50,7 +50,7 @@ describe("SequelizeRevision", () => {
 
     it("does not log revisions when creating a project with noRevision=true", async () => {
       await Project.create(
-        { name: "sequelize-paper-trail", version: "1" },
+        { name: "sequelize-paper-trail", version: 1 },
         { noRevision: true }
       );
 
@@ -61,8 +61,95 @@ describe("SequelizeRevision", () => {
     it("logs revisions when creating a project", async () => {
       const project = await Project.create({
         name: "sequelize-paper-trail",
-        version: "1",
+        version: 1,
       });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].id).toBe(project.revision);
+      expect(revisions[0].model).toBe("Project");
+      expect(revisions[0].document).toBe(
+        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
+      );
+      expect(revisions[0].documentId).toBe(project.id);
+      expect(revisions[0].operation).toBe("create");
+      expect(revisions[0].revision).toBe(1);
+    });
+
+    it("does not log revisions when updating a project with noRevision=true", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update(
+        { name: "sequelize-paper-trail", version: 1 },
+        { noRevision: true }
+      );
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
+    });
+
+    it("does not log revisions when updating a project with same versions", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-paper-trail", version: 1 });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
+    });
+
+    it("logs revisions when updating a project", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-revision" });
+      await project.update({ version: 2 });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(2);
+
+      expect(revisions[0].id).not.toBe(project.revision);
+      expect(revisions[0].model).toBe("Project");
+      expect(revisions[0].document).toBe(
+        JSON.stringify({ name: "sequelize-revision", version: 1 })
+      );
+      expect(revisions[0].documentId).toBe(project.id);
+      expect(revisions[0].operation).toBe("update");
+      expect(revisions[0].revision).toBe(revisions[0].id);
+
+      expect(revisions[1].id).toBe(project.revision);
+      expect(revisions[1].model).toBe("Project");
+      expect(revisions[1].document).toBe(
+        JSON.stringify({ name: "sequelize-revision", version: 2 })
+      );
+      expect(revisions[1].documentId).toBe(project.id);
+      expect(revisions[1].operation).toBe("update");
+      expect(revisions[1].revision).toBe(revisions[1].id);
+    });
+
+    it("logs revisions when updating a project in different types", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-paper-trail", version: "1" });
 
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(1);
@@ -73,93 +160,19 @@ describe("SequelizeRevision", () => {
         JSON.stringify({ name: "sequelize-paper-trail", version: "1" })
       );
       expect(revisions[0].documentId).toBe(project.id);
-      expect(revisions[0].operation).toBe("create");
-      expect(revisions[0].revision).toBe(1);
-    });
-
-    it("does not log revisions when updating a project with noRevision=true", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update(
-        { name: "sequelize-paper-trail", version: "1" },
-        { noRevision: true }
-      );
-
-      const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(1);
-    });
-
-    it("does not log revisions when updating a project with same versions", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-paper-trail", version: "1" });
-
-      const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(1);
-    });
-
-    it("logs revisions when updating a project", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-revision" });
-      await project.update({ version: "2" });
-
-      const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(3);
-
-      expect(revisions[1].id).not.toBe(project.revision);
-      expect(revisions[1].model).toBe("Project");
-      expect(revisions[1].document).toBe(
-        JSON.stringify({ name: "sequelize-revision", version: "1" })
-      );
-      expect(revisions[1].documentId).toBe(project.id);
-      expect(revisions[1].operation).toBe("update");
-      expect(revisions[1].revision).toBe(revisions[1].id);
-
-      expect(revisions[2].id).toBe(project.revision);
-      expect(revisions[2].model).toBe("Project");
-      expect(revisions[2].document).toBe(
-        JSON.stringify({ name: "sequelize-revision", version: "2" })
-      );
-      expect(revisions[2].documentId).toBe(project.id);
-      expect(revisions[2].operation).toBe("update");
-      expect(revisions[2].revision).toBe(revisions[2].id);
-    });
-
-    it("logs revisions when updating a project in different types", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-paper-trail", version: 1 });
-
-      const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(2);
-
-      expect(revisions[1].id).toBe(project.revision);
-      expect(revisions[1].model).toBe("Project");
-      expect(revisions[1].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
-      );
-      expect(revisions[1].documentId).toBe(project.id);
-      expect(revisions[1].operation).toBe("update");
-      expect(revisions[1].revision).toBe(revisions[1].id);
+      expect(revisions[0].operation).toBe("update");
+      expect(revisions[0].revision).toBe(revisions[0].id);
     });
 
     it("does not log revisions when failing a transaction", async () => {
       try {
-        await sequelize.transaction(async (t) => {
-          const table = await Project.create(
-            { name: "sequelize-paper-trail", version: "1" },
-            { transaction: t }
+        await sequelize.transaction(async (transaction) => {
+          const project = await Project.create(
+            { name: "sequelize-paper-trail", version: 1 },
+            { transaction }
           );
-          await table.update({ name: "sequelize-revision" });
+          await project.update({ name: "sequelize-revision" }, { transaction });
+          await project.destroy({ transaction });
           throw new Error("Transaction is failed");
         });
       } catch {
@@ -170,29 +183,31 @@ describe("SequelizeRevision", () => {
     });
 
     it("logs revisions when deleting a project", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
       await project.destroy();
 
       const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(2);
+      expect(revisions.length).toBe(1);
 
-      expect(revisions[1].id).toBe(project.revision);
-      expect(revisions[1].model).toBe("Project");
-      expect(revisions[1].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: "1" })
+      expect(revisions[0].id).toBe(project.revision);
+      expect(revisions[0].model).toBe("Project");
+      expect(revisions[0].document).toBe(
+        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
       );
-      expect(revisions[1].documentId).toBe(project.id);
-      expect(revisions[1].operation).toBe("destroy");
-      expect(revisions[1].revision).toBe(revisions[1].id);
+      expect(revisions[0].documentId).toBe(project.id);
+      expect(revisions[0].operation).toBe("destroy");
+      expect(revisions[0].revision).toBe(revisions[0].id);
     });
   });
 
   describe("logging revision changes", () => {
     let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
     let RevisionChange: any;
 
     beforeEach(async () => {
@@ -200,14 +215,14 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = await sequelizeRevision.defineModels());
+      ({ RevisionChange } = await sequelizeRevision.defineModels());
 
       await sequelizeRevision.trackRevision(sequelize.model("Project"));
     });
 
     it("does not log revisionChanges when creating a project with noRevision=true", async () => {
       await Project.create(
-        { name: "sequelize-paper-trail", version: "1" },
+        { name: "sequelize-paper-trail", version: 1 },
         { noRevision: true }
       );
 
@@ -218,7 +233,7 @@ describe("SequelizeRevision", () => {
     it("logs revisionChanges when creating a project", async () => {
       const project = await Project.create({
         name: "sequelize-paper-trail",
-        version: "1",
+        version: 1,
       });
 
       const revisionChanges = await RevisionChange.findAll();
@@ -228,74 +243,78 @@ describe("SequelizeRevision", () => {
     });
 
     it("does not log revisionChanges when updating a project with noRevision=true", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
       await project.update(
-        { name: "sequelize-paper-trail", version: "1" },
+        { name: "sequelize-paper-trail", version: 1 },
         { noRevision: true }
       );
 
       const revisionChanges = await RevisionChange.findAll();
-      expect(revisionChanges.length).toBe(2);
+      expect(revisionChanges.length).toBe(0);
     });
 
     it("does not log revisionChanges when updating a project with same versions", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-paper-trail", version: "1" });
-
-      const revisionChanges = await RevisionChange.findAll();
-      expect(revisionChanges.length).toBe(2);
-    });
-
-    it("logs revisionChanges when updating a project", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-revision" });
-      await project.update({ version: "2" });
-
-      const revisionChanges = await RevisionChange.findAll();
-      expect(revisionChanges.length).toBe(4);
-
-      expect(map(revisionChanges, "path")).toEqual([
-        "name",
-        "version",
-        "name",
-        "version",
-      ]);
-    });
-
-    it("logs revisionChanges when updating a project in different types", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
       await project.update({ name: "sequelize-paper-trail", version: 1 });
 
       const revisionChanges = await RevisionChange.findAll();
-      expect(revisionChanges.length).toBe(3);
+      expect(revisionChanges.length).toBe(0);
+    });
 
-      expect(map(revisionChanges, "path")).toEqual([
-        "name",
-        "version",
-        "version",
-      ]);
+    it("logs revisionChanges when updating a project", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-revision" });
+      await project.update({ version: 2 });
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(2);
+
+      expect(map(revisionChanges, "path")).toEqual(["name", "version"]);
+    });
+
+    it("logs revisionChanges when updating a project in different types", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-paper-trail", version: "1" });
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(1);
+
+      expect(map(revisionChanges, "path")).toEqual(["version"]);
     });
 
     it("does not log revisionChanges when failing a transaction", async () => {
       try {
-        await sequelize.transaction(async (t) => {
-          const table = await Project.create(
-            { name: "sequelize-paper-trail", version: "1" },
-            { transaction: t }
+        await sequelize.transaction(async (transaction) => {
+          const project = await Project.create(
+            { name: "sequelize-paper-trail", version: 1 },
+            { transaction }
           );
-          await table.update({ name: "sequelize-revision" });
+          await project.update({ name: "sequelize-revision" }, { transaction });
+          await project.destroy({ transaction });
           throw new Error("Transaction is failed");
         });
       } catch {
@@ -306,14 +325,17 @@ describe("SequelizeRevision", () => {
     });
 
     it("does not log revisionChanges when deleting a project", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
       await project.destroy();
 
       const revisionChanges = await RevisionChange.findAll();
-      expect(revisionChanges.length).toBe(2);
+      expect(revisionChanges.length).toBe(0);
     });
   });
 
@@ -338,7 +360,7 @@ describe("SequelizeRevision", () => {
     it("logs revisions without userId", async () => {
       const project = await Project.create({
         name: "sequelize-paper-trail",
-        version: "1",
+        version: 1,
       });
       await project.update({ name: "sequelize-revision" });
       await project.destroy();
@@ -355,7 +377,7 @@ describe("SequelizeRevision", () => {
 
         const project = await Project.create({
           name: "sequelize-paper-trail",
-          version: "1",
+          version: 1,
         });
         await project.update({ name: "sequelize-revision" });
         await project.destroy();
@@ -372,7 +394,7 @@ describe("SequelizeRevision", () => {
       const project = await Project.create(
         {
           name: "sequelize-paper-trail",
-          version: "1",
+          version: 1,
         },
         { userId: user.id }
       );
@@ -413,7 +435,7 @@ describe("SequelizeRevision", () => {
 
         const project = await Project.create({
           name: "sequelize-paper-trail",
-          version: "1",
+          version: 1,
         });
 
         const revisions = await Revision.findAll();
@@ -430,17 +452,20 @@ describe("SequelizeRevision", () => {
       ns.run(async () => {
         ns.set("userId", user.id);
 
-        const project = await Project.create({
-          name: "sequelize-paper-trail",
-          version: "1",
-        });
+        const project = await Project.create(
+          {
+            name: "sequelize-paper-trail",
+            version: 1,
+          },
+          { noRevision: true }
+        );
         await project.update({ name: "sequelize-revision" });
 
         const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(2);
+        expect(revisions.length).toBe(1);
 
-        expect(revisions[1].document_id).toBe(project.id);
-        expect(revisions[1].user_id).toBe(user.id);
+        expect(revisions[0].document_id).toBe(project.id);
+        expect(revisions[0].user_id).toBe(user.id);
         done();
       });
     });
@@ -448,23 +473,26 @@ describe("SequelizeRevision", () => {
     it("logs revisions when deleting a project", (done) => {
       ns.run(async () => {
         ns.set("userId", user.id);
-        const project = await Project.create({
-          name: "sequelize-paper-trail",
-          version: "1",
-        });
+        const project = await Project.create(
+          {
+            name: "sequelize-paper-trail",
+            version: 1,
+          },
+          { noRevision: true }
+        );
         await project.destroy();
 
         const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(2);
+        expect(revisions.length).toBe(1);
 
-        expect(revisions[1].document_id).toBe(project.id);
-        expect(revisions[1].user_id).toBe(user.id);
+        expect(revisions[0].document_id).toBe(project.id);
+        expect(revisions[0].user_id).toBe(user.id);
         done();
       });
     });
   });
 
-  describe("exclude", () => {
+  describe("logging revisions for excludeed attributes", () => {
     const exclude = [
       "id",
       "createdAt",
@@ -491,19 +519,21 @@ describe("SequelizeRevision", () => {
     });
 
     it("does not log revision when updated attributes are excluded", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
-      await project.update({ name: "sequelize-paper-trail", version: "2" });
-      await project.destroy({ userId: user.id });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-paper-trail", version: 2 });
 
       const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(2);
+      expect(revisions.length).toBe(0);
     });
   });
 
-  describe("unstrict diff", () => {
+  describe("logging revisions with unstrict diff", () => {
     let sequelizeRevision: SequelizeRevision;
     let Revision: any;
 
@@ -518,18 +548,21 @@ describe("SequelizeRevision", () => {
     });
 
     it("does not log revision when updating project in different types", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: "1",
-      });
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
       await project.update({ name: "sequelize-paper-trail", version: 1 });
 
       const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(1);
+      expect(revisions.length).toBe(0);
     });
   });
 
-  describe("debug", () => {
+  describe("logging revisions with debug mode", () => {
     let sequelizeRevision: SequelizeRevision;
     let Revision: any;
 
@@ -547,9 +580,9 @@ describe("SequelizeRevision", () => {
     it("does not fail with debug=true", async () => {
       const project = await Project.create({
         name: "sequelize-paper-trail",
-        version: "1",
+        version: 1,
       });
-      await project.update({ name: "sequelize-revision", version: "2" });
+      await project.update({ name: "sequelize-revision", version: 2 });
       await project.destroy();
 
       const revisions = await Revision.findAll();
