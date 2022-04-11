@@ -1,6 +1,7 @@
 import { forEach, map, filter, keys, omit, omitBy, pickBy } from "lodash";
 import {
   Sequelize,
+  Model,
   ModelAttributes,
   INTEGER,
   TEXT,
@@ -246,12 +247,17 @@ export class SequelizeRevision {
       "beforeUpdate",
       this.createBeforeHook("update", modelExclude)
     );
+    model.addHook(
+      "beforeUpsert",
+      this.createBeforeHook("upsert", modelExclude)
+    );
     model.addHook("afterCreate", this.createAfterHook("create", modelExclude));
     model.addHook(
       "afterDestroy",
       this.createAfterHook("destroy", modelExclude)
     );
     model.addHook("afterUpdate", this.createAfterHook("update", modelExclude));
+    model.addHook("afterUpsert", this.createAfterHook("upsert", modelExclude));
 
     // create association
     model.hasMany(this.sequelize.models[this.options.revisionModel], {
@@ -274,6 +280,10 @@ export class SequelizeRevision {
   private createBeforeHook(operation: string, modelExclude: string[]) {
     const exclude = [...this.options.exclude, ...modelExclude];
     return (instance: any, opt: any) => {
+      if (!(instance instanceof Model) && opt.instance instanceof Model) {
+        instance = opt.instance;
+      }
+
       if (this.options.debug) {
         this.log("beforeHook called");
         this.log("instance:", instance);
@@ -392,6 +402,10 @@ export class SequelizeRevision {
   private createAfterHook(operation: string, modelExclude: string[]) {
     const exclude = [...this.options.exclude, ...modelExclude];
     return async (instance: any, opt: any) => {
+      if (instance instanceof Array) {
+        instance = instance[0];
+      }
+
       if (this.options.debug) {
         this.log("afterHook called");
         this.log("instance:", instance);

@@ -32,7 +32,7 @@ describe("SequelizeRevision", () => {
     Project = sequelize.model("Project");
     User = sequelize.model("User");
 
-    user = await User.create({ name: "sequelize-paper-trail" });
+    user = await User.create({ name: "yujiosaka" });
   });
 
   describe("logging revisions", () => {
@@ -203,6 +203,88 @@ describe("SequelizeRevision", () => {
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("destroy");
       expect(revisions[0].revision).toBe(revisions[0].id);
+    });
+  });
+
+  describe("logging revisions for upsert", () => {
+    let sequelizeRevision: SequelizeRevision;
+    let Revision: any;
+
+    beforeEach(async () => {
+      sequelizeRevision = new SequelizeRevision(sequelize, {
+        enableMigration: true,
+      });
+      ({ Revision } = await sequelizeRevision.defineModels());
+
+      await sequelizeRevision.trackRevision(sequelize.model("Project"));
+    });
+
+    it("does not log revisions when upserting a project with noRevision=true", async () => {
+      let [project] = await Project.upsert(
+        { name: "sequelize-paper-trail", version: 1 },
+        { noRevision: true }
+      );
+      [project] = await Project.upsert(
+        { id: project.id, version: 2 },
+        { noRevision: true }
+      );
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
+    });
+
+    it("logs revisions when upserting a project", async () => {
+      let [project] = await Project.upsert({
+        name: "sequelize-paper-trail",
+        version: 1,
+      });
+      [project] = await Project.upsert({
+        id: project.id,
+        name: "sequelize-paper-trail",
+        version: 2,
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(2);
+
+      expect(revisions[0].id).toBe(project.revision);
+      expect(revisions[0].model).toBe("Project");
+      expect(revisions[0].document).toBe(
+        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
+      );
+      expect(revisions[0].documentId).toBe(project.id);
+      expect(revisions[0].operation).toBe("upsert");
+
+      expect(revisions[1].id).not.toBe(project.revision);
+      expect(revisions[1].model).toBe("Project");
+      expect(revisions[1].document).toBe(
+        JSON.stringify({ name: "sequelize-paper-trail", version: 2 })
+      );
+      expect(revisions[1].documentId).toBe(project.id);
+      expect(revisions[1].operation).toBe("upsert");
+    });
+
+    it("does not log revisions when failing a transaction", async () => {
+      try {
+        await sequelize.transaction(async (transaction) => {
+          let [project] = await Project.upsert(
+            {
+              name: "sequelize-paper-trail",
+              version: 1,
+            },
+            { transaction }
+          );
+          [project] = await Project.upsert(
+            { id: project.id, name: "sequelize-paper-trail", version: 2 },
+            { transaction }
+          );
+          throw new Error("Transaction is failed");
+        });
+      } catch {
+        // ignore error
+      }
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
     });
   });
 
