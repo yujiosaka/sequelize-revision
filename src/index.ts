@@ -361,7 +361,9 @@ export class SequelizeRevision {
         }
         instance.context.delta = delta;
       } else {
-        instance.context.delta = null;
+        if (instance.context) {
+          instance.context.delta = null;
+        }
       }
 
       if (this.options.debug) {
