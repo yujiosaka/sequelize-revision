@@ -190,7 +190,10 @@ export class SequelizeRevision {
 
   // Extend model prototype with "trackRevision" function
   // Call model.trackRevision() to enable revisions for model
-  public async trackRevision(model: ModelDefined<any, any>): Promise<void> {
+  public async trackRevision(
+    model: ModelDefined<any, any>,
+    options: { exclude?: string[] } = {}
+  ): Promise<void> {
     if (this.options.debug) {
       this.log("Enabling paper trail on", model.name);
     }
@@ -230,12 +233,25 @@ export class SequelizeRevision {
       }
     }
 
-    model.addHook("beforeCreate", this.createBeforeHook("create"));
-    model.addHook("beforeDestroy", this.createBeforeHook("destroy"));
-    model.addHook("beforeUpdate", this.createBeforeHook("update"));
-    model.addHook("afterCreate", this.createAfterHook("create"));
-    model.addHook("afterDestroy", this.createAfterHook("destroy"));
-    model.addHook("afterUpdate", this.createAfterHook("update"));
+    const modelExclude = options.exclude || [];
+    model.addHook(
+      "beforeCreate",
+      this.createBeforeHook("create", modelExclude)
+    );
+    model.addHook(
+      "beforeDestroy",
+      this.createBeforeHook("destroy", modelExclude)
+    );
+    model.addHook(
+      "beforeUpdate",
+      this.createBeforeHook("update", modelExclude)
+    );
+    model.addHook("afterCreate", this.createAfterHook("create", modelExclude));
+    model.addHook(
+      "afterDestroy",
+      this.createAfterHook("destroy", modelExclude)
+    );
+    model.addHook("afterUpdate", this.createAfterHook("update", modelExclude));
 
     // create association
     model.hasMany(this.sequelize.models[this.options.revisionModel], {
@@ -255,7 +271,8 @@ export class SequelizeRevision {
     this.failHard = true;
   }
 
-  private createBeforeHook(operation: string) {
+  private createBeforeHook(operation: string, modelExclude: string[]) {
+    const exclude = [...this.options.exclude, ...modelExclude];
     return (instance: any, opt: any) => {
       if (this.options.debug) {
         this.log("beforeHook called");
@@ -288,13 +305,13 @@ export class SequelizeRevision {
         previousVersion,
         (i) => i != null && typeof i === "object" && !(i instanceof Date)
       );
-      previousVersion = omit(previousVersion, this.options.exclude);
+      previousVersion = omit(previousVersion, exclude);
 
       currentVersion = omitBy(
         currentVersion,
         (i) => i != null && typeof i === "object" && !(i instanceof Date)
       );
-      currentVersion = omit(currentVersion, this.options.exclude);
+      currentVersion = omit(currentVersion, exclude);
 
       // Disallow change of revision
       instance.set(
@@ -306,7 +323,7 @@ export class SequelizeRevision {
       const delta = helpers.calcDelta(
         previousVersion,
         currentVersion,
-        this.options.exclude,
+        exclude,
         this.options.enableStrictDiff
       );
 
@@ -372,7 +389,8 @@ export class SequelizeRevision {
     };
   }
 
-  private createAfterHook(operation: string) {
+  private createAfterHook(operation: string, modelExclude: string[]) {
+    const exclude = [...this.options.exclude, ...modelExclude];
     return async (instance: any, opt: any) => {
       if (this.options.debug) {
         this.log("afterHook called");
@@ -421,13 +439,13 @@ export class SequelizeRevision {
           previousVersion,
           (i) => i != null && typeof i === "object" && !(i instanceof Date)
         );
-        previousVersion = omit(previousVersion, this.options.exclude);
+        previousVersion = omit(previousVersion, exclude);
 
         currentVersion = omitBy(
           currentVersion,
           (i) => i != null && typeof i === "object" && !(i instanceof Date)
         );
-        currentVersion = omit(currentVersion, this.options.exclude);
+        currentVersion = omit(currentVersion, exclude);
 
         if (
           this.failHard &&

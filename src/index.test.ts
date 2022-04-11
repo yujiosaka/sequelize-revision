@@ -533,6 +533,34 @@ describe("SequelizeRevision", () => {
     });
   });
 
+  describe("logging revisions for excludeed attributes for each model", () => {
+    let sequelizeRevision: SequelizeRevision;
+    let Revision: any;
+
+    beforeEach(async () => {
+      sequelizeRevision = new SequelizeRevision(sequelize, {
+        enableMigration: true,
+      });
+      ({ Revision } = await sequelizeRevision.defineModels());
+
+      await sequelizeRevision.trackRevision(Project, { exclude: ["version"] });
+    });
+
+    it("does not log revision when updated attributes are excluded", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-paper-trail",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ name: "sequelize-paper-trail", version: 2 });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
+    });
+  });
+
   describe("logging revisions with unstrict diff", () => {
     let sequelizeRevision: SequelizeRevision;
     let Revision: any;

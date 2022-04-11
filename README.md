@@ -13,6 +13,7 @@ Sequelize Revision a fork from [Sequelize Paper Trail](https://github.com/nielsg
 
 - Re-written in TypeScript and support type checks
 - Working well with or without [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
+- Allowing to exclude attributes for each model
 - Better coverage in unit tests
 
 ## Table of Contents
@@ -20,7 +21,10 @@ Sequelize Revision a fork from [Sequelize Paper Trail](https://github.com/nielsg
 - [Installation](#installation)
 - [Usage](#usage)
     - [Example](#example)
-- [User Tracking](#user-tracking)
+- [TIPS](#tips)
+    - [User tracking](#user-tracking)
+    - [Disable logging for a single call](#disable-logging-for-a-single-call)
+    - [Exclude attributes](#exclude-attributes)
 - [Options](#options)
     - [Default options](#default-options)
     - [Options documentation](#options-documentation)
@@ -80,7 +84,9 @@ const User = sequelize.define('User', {
 await sequelizeRevision.trackRevision(User);
 ```
 
-## User Tracking
+## TIPS
+
+### User tracking
 
 There are 2 steps to enable user tracking, ie, recording the user who created a particular revision.
 1. Enable user tracking by passing `userModel` option to the constructor, with the name of the model which stores users in your application as the value.
@@ -121,7 +127,7 @@ Model.update({
 To enable cls-hooked set `continuationNamespace` in initialization options.
 Additionally, you may also have to call `.run()` or `.bind()` on your cls namespace, as described in the [docs](https://www.npmjs.com/package/cls-hooked).
 
-## Disable logging for a single call
+### Disable logging for a single call
 
 To not log a specific change to a revisioned object, just pass a `noRevision` with `true` value.
 
@@ -131,6 +137,23 @@ instance.update({ noRevision: true }).then(() {
   /* ... */
 });
 ```
+
+### Exclude attributes
+
+You can pass `exclude` parameters to the constructor in order to avoid logging revisions for updating the attributes for any models.
+
+```typescript
+const sequelizeRevision = new SequelizeRevision(sequelize, exclude: ["version"]);
+await sequelizeRevision.defineModels();
+```
+
+If you want to exclude attributes specific to eacy model, you can pass `exclude` parameters to `trackRevision` function.
+
+```typescript
+await sequelizeRevision.trackRevision(Project, { exclude: ["version"] })
+```
+
+Please note that the model level `exclude` does not overwrite the constructor `exclude`. Both `exclude` options are respected.
 
 ## Options
 
