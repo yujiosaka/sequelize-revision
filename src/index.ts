@@ -22,8 +22,8 @@ export class SequelizeRevision {
   private log: (...data: any[]) => void;
   private postgres: boolean;
   private failHard = false;
-  private Revision: ModelDefined<any, any>;
-  private RevisionChange?: ModelDefined<any, any>;
+  Revision: ModelDefined<any, any>;
+  RevisionChange?: ModelDefined<any, any>;
 
   constructor(
     private sequelize: Sequelize,
