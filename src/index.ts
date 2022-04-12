@@ -209,7 +209,7 @@ export class SequelizeRevision {
     };
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
+    // @ts-ignore
     model.refreshAttributes();
 
     if (this.options.enableMigration) {
@@ -358,9 +358,10 @@ export class SequelizeRevision {
           pickBy(this.options.metaDataFields, (required) => required)
         );
         if (requiredFields && requiredFields.length) {
-          const metaData =
-            (this.ns && this.ns.get(this.options.metaDataContinuationKey)) ||
-            opt.metaData;
+          const metaData = {
+            ...opt.revisionMetaData,
+            ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
+          };
           const requiredFieldsProvided = filter(
             requiredFields,
             (field) => metaData[field] !== undefined
@@ -490,9 +491,10 @@ export class SequelizeRevision {
 
         // Add all extra data fields to the query object
         if (this.options.metaDataFields) {
-          const metaData =
-            (this.ns && this.ns.get(this.options.metaDataContinuationKey)) ||
-            opt.metaData;
+          const metaData = {
+            ...opt.revisionMetaData,
+            ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
+          };
           if (metaData) {
             forEach(this.options.metaDataFields, (required, field) => {
               const value = metaData[field];

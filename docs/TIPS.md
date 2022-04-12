@@ -2,6 +2,7 @@
 
 - [User tracking](#user-tracking)
 - [Disable logging for a single call](#disable-logging-for-a-single-call)
+- [Saving meta data](#saving-meta-data)
 - [Exclude attributes](#exclude-attributes)
 
 ## User tracking
@@ -15,17 +16,19 @@ const options = {
   userModel: 'user',
 };
 ```
-2. Pass the id of the user who is responsible for the database operation to `sequelize-revision` either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
+
+2. Pass the id of the user who is responsible for the database operation to revisions either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
 
 ```typescript
 Model.update({
   /* ... */
 }, {
-  userId: user.id
+  userId: user.id,
 }).then(() {
   /* ... */
 });
 ```
+
 OR
 
 ```typescript
@@ -55,16 +58,46 @@ instance.update({ noRevision: true }).then(() {
 });
 ```
 
-## Saving metadata
+## Saving meta data
 
-For saving additional metadata in revisions table, you can pass `revisionMetadata` option to operations.
+You can save meta data to revisions table in 2 steps Whne revisions table already has additional columns.
+1. Pass `metaDataFields` option to the constructor in `{ key: isRequired (boolean) }` format.
 
 ```typescript
-const instance = await Model.findOne();
-instance.update({ noRevision: true }).then(() {
+const options = {
+  /* ... */
+  metaDataFields: { userRole: false },
+};
+```
+
+2. Pass the metadata to revisions either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
+
+```typescript
+Model.update({
+  /* ... */
+}, {
+  revisionMetaData: { userRole: "admin" },
+}).then(() {
   /* ... */
 });
 ```
+
+OR
+
+```typescript
+import { createNamespace } = from 'cls-hooked';
+
+const session = createNamespace('my session');
+session.set("metaData", { userRole: "admin" });
+
+Model.update({
+  /* ... */
+}).then(() {
+  /* ... */
+});
+```
+
+To enable cls-hooked set continuationNamespace in initialization options. Additionally, you may also have to call .run() or .bind() on your cls namespace, as described in the docs.
 
 ## Exclude attributes
 
