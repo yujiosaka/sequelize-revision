@@ -4,7 +4,10 @@ import { createNamespace } from "cls-hooked";
 import { SequelizeRevision } from "../src/index";
 
 describe("SequelizeRevision", () => {
+  let sequelizeRevision: SequelizeRevision;
   let sequelize: Sequelize;
+  let RevisionChange: any;
+  let Revision: any;
   let Project: any;
   let User: any;
   let user: any;
@@ -36,9 +39,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revisions", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -207,9 +207,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revisions for upsert", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -289,9 +286,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revision changes", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let RevisionChange: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -313,7 +307,7 @@ describe("SequelizeRevision", () => {
     });
 
     it("logs revisionChanges when creating a project", async () => {
-      const project = await Project.create({
+      await Project.create({
         name: "sequelize-paper-trail",
         version: 1,
       });
@@ -424,9 +418,6 @@ describe("SequelizeRevision", () => {
   describe("tracking users", () => {
     const ns = createNamespace("ns1");
 
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -492,9 +483,6 @@ describe("SequelizeRevision", () => {
 
   describe("tracking users with underscored column names", () => {
     const ns = createNamespace("ns2");
-
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
 
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
@@ -587,9 +575,6 @@ describe("SequelizeRevision", () => {
       "version",
     ];
 
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -616,9 +601,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revisions for excludeed attributes for each model", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -644,9 +626,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revisions with unstrict diff", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
@@ -673,9 +652,6 @@ describe("SequelizeRevision", () => {
   });
 
   describe("logging revisions with debug mode", () => {
-    let sequelizeRevision: SequelizeRevision;
-    let Revision: any;
-
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,

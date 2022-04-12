@@ -19,10 +19,10 @@ export default class Helper {
 
   static calcDelta(
     current: { [key: string]: any },
-    next: { [key: string]: string },
+    next: { [key: string]: any },
     exclude: string[],
     strict: boolean
-  ) {
+  ): { [key: string]: any }[] | null {
     const di = diff(current, next);
 
     let diffs = [];

@@ -23,7 +23,7 @@ export class SequelizeRevision {
   private postgres: boolean;
   private failHard = false;
   private Revision: ModelDefined<any, any>;
-  private RevisionChange: ModelDefined<any, any> | null = null;
+  private RevisionChange?: ModelDefined<any, any>;
 
   constructor(
     private sequelize: Sequelize,
@@ -482,7 +482,7 @@ export class SequelizeRevision {
         }
 
         // Build revision
-        const query: any = {
+        const query: { [key: string]: any } = {
           model: instance.constructor.name,
           document,
           operation,
