@@ -22,6 +22,8 @@ export class SequelizeRevision {
   private log: (...data: any[]) => void;
   private postgres: boolean;
   private failHard = false;
+  private Revision: ModelDefined<any, any>;
+  private RevisionChange: ModelDefined<any, any> | null = null;
 
   constructor(
     private sequelize: Sequelize,
@@ -45,15 +47,9 @@ export class SequelizeRevision {
 
     this.postgres = this.sequelize.getDialect() === "postgres";
     this.log = this.options.log || console.log;
-  }
 
-  // Return defineModels()
-  public async defineModels(): Promise<{
-    Revision: ModelDefined<any, any>;
-    RevisionChange?: ModelDefined<any, any>;
-  }> {
     // Attributes for RevisionModel
-    let attributes: ModelAttributes = {
+    const revisionAttributes: ModelAttributes = {
       model: {
         type: TEXT,
         allowNull: false,
@@ -74,7 +70,7 @@ export class SequelizeRevision {
     };
 
     if (this.options.UUID) {
-      attributes.id = {
+      revisionAttributes.id = {
         primaryKey: true,
         type: UUID,
         defaultValue: UUIDV4,
@@ -82,33 +78,22 @@ export class SequelizeRevision {
     }
 
     if (this.options.debug) {
-      this.log("attributes", attributes);
+      this.log("attributes", revisionAttributes);
     }
 
     // Revision model
-    const Revision = this.sequelize.define(
+    this.Revision = this.sequelize.define(
       this.options.revisionModel,
-      attributes,
+      revisionAttributes,
       {
         underscored: this.options.underscored,
         tableName: this.options.tableName,
       }
     );
 
-    if (this.options.userModel) {
-      Revision.belongsTo(this.sequelize.model(this.options.userModel), {
-        foreignKey: this.options.userModelAttribute,
-        ...this.options.belongsToUserOptions,
-      });
-    }
-
-    if (this.options.enableMigration) {
-      await Revision.sync();
-    }
-
     if (this.options.enableRevisionChangeModel) {
       // Attributes for RevisionChangeModel
-      attributes = {
+      const revisionChangeAttributes: ModelAttributes = {
         path: {
           type: TEXT,
           allowNull: false,
@@ -124,39 +109,58 @@ export class SequelizeRevision {
       };
 
       if (this.options.UUID) {
-        attributes.id = {
+        revisionChangeAttributes.id = {
           primaryKey: true,
           type: UUID,
           defaultValue: UUIDV4,
         };
       }
       // RevisionChange model
-      const RevisionChange = this.sequelize.define(
+      this.RevisionChange = this.sequelize.define(
         this.options.revisionChangeModel,
-        attributes,
+        revisionChangeAttributes,
         {
           underscored: this.options.underscored,
         }
       );
+    }
+  }
 
+  // Return defineModels()
+  public async defineModels(): Promise<{
+    Revision: ModelDefined<any, any>;
+    RevisionChange?: ModelDefined<any, any>;
+  }> {
+    if (this.options.userModel) {
+      this.Revision.belongsTo(this.sequelize.model(this.options.userModel), {
+        foreignKey: this.options.userModelAttribute,
+        ...this.options.belongsToUserOptions,
+      });
+    }
+
+    if (this.options.enableMigration) {
+      await this.Revision.sync();
+    }
+
+    if (this.RevisionChange) {
       // Set associations
-      Revision.hasMany(RevisionChange, {
+      this.Revision.hasMany(this.RevisionChange, {
         foreignKey: this.options.defaultAttributes.revisionId,
         constraints: false,
       });
 
-      RevisionChange.belongsTo(Revision, {
+      this.RevisionChange.belongsTo(this.Revision, {
         foreignKey: this.options.defaultAttributes.revisionId,
       });
 
       if (this.options.enableMigration) {
-        await RevisionChange.sync();
+        await this.RevisionChange.sync();
       }
 
-      return { Revision, RevisionChange };
+      return { Revision: this.Revision, RevisionChange: this.RevisionChange };
     }
 
-    return { Revision };
+    return { Revision: this.Revision };
   }
 
   // order in which sequelize processes the hooks
