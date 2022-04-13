@@ -50,7 +50,7 @@ export class SequelizeRevision {
         allowNull: false,
       },
       [this.options.defaultAttributes.documentId]: {
-        type: this.options.UUID ? DataTypes.INTEGER : DataTypes.UUID,
+        type: this.options.UUID ? DataTypes.UUID : DataTypes.INTEGER,
         allowNull: false,
       },
       operation: DataTypes.STRING(7),
