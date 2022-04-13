@@ -26,6 +26,7 @@ export interface Options {
   metaDataContinuationKey: string;
   postgres: boolean;
   tableName?: string;
+  changeTableName?: string;
   belongsToUserOptions?: BelongsToOptions;
 }
 
@@ -66,5 +67,6 @@ export const defaultOptions = {
   metaDataContinuationKey: "metaData",
   postgres: false,
   tableName: undefined,
+  changeTableName: undefined,
   belongsToUserOptions: undefined,
 };

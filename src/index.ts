@@ -121,6 +121,7 @@ export class SequelizeRevision {
         revisionChangeAttributes,
         {
           underscored: this.options.underscored,
+          tableName: this.options.changeTableName,
         }
       );
     }
