@@ -5,7 +5,7 @@
 [![CircleCI](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master.svg?style=shield)](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master)
 [![license](https://img.shields.io/github/license/yujiosaka/sequelize-revision.svg)](https://github.com/yujiosaka/sequelize-revision/blob/master/LICENSE)
 
-###### [TIPS](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TIPS.md) | [Troubleshooting](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TROUBLESHOOTING.md) | [Code of Conduct](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CODE_OF_CONDUCT.md) | [Contributing](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CONTRIBUTING.md) | [Changelog](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CHANGELOG.md)
+###### [TIPS](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TIPS.md) | [Troubleshooting](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TROUBLESHOOTING.md) | [Code of Conduct](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CODE_OF_CONDUCT.md) | [Contributing](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CONTRIBUTING.md) | [Security Policy](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/SECURITY.md) | [Changelog](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CHANGELOG.md)
 
 > Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript).
 
@@ -13,6 +13,7 @@ Sequelize Revision is a fork from [Sequelize Paper Trail](https://github.com/nie
 
 - Re-written in TypeScript and support type checks
 - Working well with or without [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
+- Tracking users for making changes with [cls-hooked](https://github.com/jeff-lewis/cls-hooked)
 - Support JSON data type for storing revisions
 - Exclude revision attributes for each model
 - Passing revision metadata to operations
