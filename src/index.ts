@@ -40,7 +40,7 @@ export class SequelizeRevision {
     // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
       model: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       document: {
