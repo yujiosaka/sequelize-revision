@@ -1,3 +1,27 @@
+# [4.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v3.1.0...v4.0.0) (2022-04-13)
+
+
+### Bug Fixes
+
+* use INTEGER data type for documentId by default ([8852a67](https://github.com/yujiosaka/sequelize-revision/commit/8852a6744a56fb99893d0a0ecea03a53dc241c44))
+* use medium length TEXT data type for document and diff ([8eff381](https://github.com/yujiosaka/sequelize-revision/commit/8eff3810877daf83b3c3b02fe8b9572b08adfd85))
+
+
+### Features
+
+* support `changeTableName` option ([8bc7304](https://github.com/yujiosaka/sequelize-revision/commit/8bc730487e40d507b698f53298efb2e391bbe7a3))
+* support `useJsonDataType` option ([6a16778](https://github.com/yujiosaka/sequelize-revision/commit/6a1677887dd5d3c4b5099ff1d31e4f17333be9fd))
+
+
+### Performance Improvements
+
+* use STRING data type for storing model ([ed375ac](https://github.com/yujiosaka/sequelize-revision/commit/ed375ac685d6581bf6ae0f168e674181e96067f3))
+
+
+### BREAKING CHANGES
+
+* JSON data type is used by default unless you disable it
+
 # [3.1.0](https://github.com/yujiosaka/sequelize-revision/compare/v3.0.2...v3.1.0) (2022-04-12)
 
 
