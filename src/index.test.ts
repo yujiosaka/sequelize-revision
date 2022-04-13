@@ -623,7 +623,7 @@ describe("SequelizeRevision", () => {
       });
     });
 
-    it.only("logs revisions with meta data in options", async () => {
+    it("logs revisions with meta data in options", async () => {
       const revisionMetaData = { server: "api" };
       const project = await Project.create(
         {
