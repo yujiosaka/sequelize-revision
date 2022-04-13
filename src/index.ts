@@ -1,5 +1,5 @@
 import { forEach, map, filter, keys, omit, omitBy, pickBy } from "lodash";
-import { Sequelize, Model, ModelAttributes, DataTypes } from "sequelize";
+import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
 import { ModelDefined } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
@@ -7,12 +7,13 @@ import helpers from "./helpers";
 import { Options, SequelizeRevisionOptions, defaultOptions } from "./options";
 
 export class SequelizeRevision {
-  private options: Options;
-  private ns: Namespace | undefined;
-  private log: (...data: any[]) => void;
-  private failHard = false;
   Revision: ModelDefined<any, any>;
   RevisionChange?: ModelDefined<any, any>;
+
+  private options: Options;
+  private ns?: Namespace;
+  private log: (...data: any[]) => void;
+  private failHard = false;
 
   constructor(
     private sequelize: Sequelize,
@@ -32,7 +33,7 @@ export class SequelizeRevision {
     }
 
     if (this.options.underscoredAttributes) {
-      helpers.toUnderscored(this.options.defaultAttributes);
+      helpers.snakeCaseValues(this.options.defaultAttributes);
     }
 
     this.log = this.options.log || console.log;

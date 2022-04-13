@@ -1,18 +1,16 @@
 import { diff } from "deep-diff";
-import { forEach } from "lodash";
+import { forEach, snakeCase } from "lodash";
 
-export default class Helper {
+export default class Helpers {
   static capitalizeFirstLetter(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
-  static toUnderscored(obj: { [key: string]: string }): {
+  static snakeCaseValues(obj: { [key: string]: string }): {
     [key: string]: string;
   } {
-    forEach(obj, (k, v) => {
-      obj[k] = v
-        .replace(/(?:^|\.?)([A-Z])/g, (x, y) => `_${y.toLowerCase()}`)
-        .replace(/^_/, "");
+    forEach(obj, (v, k) => {
+      obj[k] = snakeCase(v);
     });
     return obj;
   }
@@ -58,13 +56,13 @@ export default class Helper {
       return val;
     }
     if (!Number.isNaN(Number(val))) {
-      return `${String(val)}`;
+      return String(val);
     }
     if ((typeof val === "undefined" ? "undefined" : typeof val) === "object") {
-      return `${JSON.stringify(val)}`;
+      return JSON.stringify(val);
     }
     if (Array.isArray(val)) {
-      return `${JSON.stringify(val)}`;
+      return JSON.stringify(val);
     }
     return "";
   }
