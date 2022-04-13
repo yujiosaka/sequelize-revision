@@ -44,7 +44,9 @@ export class SequelizeRevision {
         allowNull: false,
       },
       document: {
-        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
+        type: this.options.useJsonDataType
+          ? DataTypes.JSON
+          : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       [this.options.defaultAttributes.documentId]: {
@@ -88,11 +90,15 @@ export class SequelizeRevision {
           allowNull: false,
         },
         document: {
-          type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
+          type: this.options.useJsonDataType
+            ? DataTypes.JSON
+            : DataTypes.TEXT("medium"),
           allowNull: false,
         },
         diff: {
-          type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
+          type: this.options.useJsonDataType
+            ? DataTypes.JSON
+            : DataTypes.TEXT("medium"),
           allowNull: false,
         },
       };
