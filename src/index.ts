@@ -1,15 +1,5 @@
 import { forEach, map, filter, keys, omit, omitBy, pickBy } from "lodash";
-import {
-  Sequelize,
-  Model,
-  ModelAttributes,
-  INTEGER,
-  TEXT,
-  JSONB,
-  STRING,
-  UUID,
-  UUIDV4,
-} from "sequelize";
+import { Sequelize, Model, ModelAttributes, DataTypes } from "sequelize";
 import { ModelDefined } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
@@ -20,7 +10,6 @@ export class SequelizeRevision {
   private options: Options;
   private ns: Namespace | undefined;
   private log: (...data: any[]) => void;
-  private postgres: boolean;
   private failHard = false;
   Revision: ModelDefined<any, any>;
   RevisionChange?: ModelDefined<any, any>;
@@ -31,6 +20,7 @@ export class SequelizeRevision {
   ) {
     this.options = <Options>{
       ...defaultOptions,
+      useJsonDataType: this.sequelize.getDialect() !== "mssql",
       ...sequelizeRevisionOptions,
     };
 
@@ -45,26 +35,25 @@ export class SequelizeRevision {
       helpers.toUnderscored(this.options.defaultAttributes);
     }
 
-    this.postgres = this.sequelize.getDialect() === "postgres";
     this.log = this.options.log || console.log;
 
     // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
       model: {
-        type: TEXT,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       document: {
-        type: this.postgres ? JSONB : TEXT,
+        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
         allowNull: false,
       },
       [this.options.defaultAttributes.documentId]: {
-        type: this.options.UUID ? INTEGER : UUID,
+        type: this.options.UUID ? DataTypes.INTEGER : DataTypes.UUID,
         allowNull: false,
       },
-      operation: STRING(7),
+      operation: DataTypes.STRING(7),
       [this.options.revisionAttribute]: {
-        type: INTEGER,
+        type: DataTypes.INTEGER,
         allowNull: false,
       },
     };
@@ -72,8 +61,8 @@ export class SequelizeRevision {
     if (this.options.UUID) {
       revisionAttributes.id = {
         primaryKey: true,
-        type: UUID,
-        defaultValue: UUIDV4,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
       };
     }
 
@@ -95,15 +84,15 @@ export class SequelizeRevision {
       // Attributes for RevisionChangeModel
       const revisionChangeAttributes: ModelAttributes = {
         path: {
-          type: TEXT,
+          type: DataTypes.TEXT,
           allowNull: false,
         },
         document: {
-          type: this.postgres ? JSONB : TEXT,
+          type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
           allowNull: false,
         },
         diff: {
-          type: this.postgres ? JSONB : TEXT,
+          type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT,
           allowNull: false,
         },
       };
@@ -111,8 +100,8 @@ export class SequelizeRevision {
       if (this.options.UUID) {
         revisionChangeAttributes.id = {
           primaryKey: true,
-          type: UUID,
-          defaultValue: UUIDV4,
+          type: DataTypes.UUID,
+          defaultValue: DataTypes.UUIDV4,
         };
       }
       // RevisionChange model
@@ -205,7 +194,7 @@ export class SequelizeRevision {
     }
 
     model.rawAttributes[this.options.revisionAttribute] = {
-      type: INTEGER,
+      type: DataTypes.INTEGER,
       defaultValue: 0,
     };
 
@@ -229,7 +218,7 @@ export class SequelizeRevision {
             tableName,
             this.options.revisionAttribute,
             {
-              type: INTEGER,
+              type: DataTypes.INTEGER,
               defaultValue: 0,
             }
           );
@@ -479,7 +468,7 @@ export class SequelizeRevision {
 
         let document = currentVersion;
 
-        if (!this.postgres) {
+        if (!this.options.useJsonDataType) {
           document = JSON.stringify(document);
         }
 
@@ -548,7 +537,7 @@ export class SequelizeRevision {
                 document = difference;
                 let diff: any = o || n ? jsdiff.diffChars(o, n) : [];
 
-                if (!this.postgres) {
+                if (!this.options.useJsonDataType) {
                   document = JSON.stringify(document);
                   diff = JSON.stringify(diff);
                 }

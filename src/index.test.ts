@@ -69,9 +69,10 @@ describe("SequelizeRevision", () => {
 
       expect(revisions[0].id).toBe(project.revision);
       expect(revisions[0].model).toBe("Project");
-      expect(revisions[0].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
-      );
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-paper-trail",
+        version: 1,
+      });
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("create");
       expect(revisions[0].revision).toBe(1);
@@ -124,18 +125,20 @@ describe("SequelizeRevision", () => {
 
       expect(revisions[0].id).not.toBe(project.revision);
       expect(revisions[0].model).toBe("Project");
-      expect(revisions[0].document).toBe(
-        JSON.stringify({ name: "sequelize-revision", version: 1 })
-      );
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-revision",
+        version: 1,
+      });
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("update");
       expect(revisions[0].revision).toBe(revisions[0].id);
 
       expect(revisions[1].id).toBe(project.revision);
       expect(revisions[1].model).toBe("Project");
-      expect(revisions[1].document).toBe(
-        JSON.stringify({ name: "sequelize-revision", version: 2 })
-      );
+      expect(revisions[1].document).toEqual({
+        name: "sequelize-revision",
+        version: 2,
+      });
       expect(revisions[1].documentId).toBe(project.id);
       expect(revisions[1].operation).toBe("update");
       expect(revisions[1].revision).toBe(revisions[1].id);
@@ -156,9 +159,10 @@ describe("SequelizeRevision", () => {
 
       expect(revisions[0].id).toBe(project.revision);
       expect(revisions[0].model).toBe("Project");
-      expect(revisions[0].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: "1" })
-      );
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-paper-trail",
+        version: "1",
+      });
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("update");
       expect(revisions[0].revision).toBe(revisions[0].id);
@@ -197,9 +201,10 @@ describe("SequelizeRevision", () => {
 
       expect(revisions[0].id).toBe(project.revision);
       expect(revisions[0].model).toBe("Project");
-      expect(revisions[0].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
-      );
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-paper-trail",
+        version: 1,
+      });
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("destroy");
       expect(revisions[0].revision).toBe(revisions[0].id);
@@ -246,17 +251,19 @@ describe("SequelizeRevision", () => {
 
       expect(revisions[0].id).toBe(project.revision);
       expect(revisions[0].model).toBe("Project");
-      expect(revisions[0].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: 1 })
-      );
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-paper-trail",
+        version: 1,
+      });
       expect(revisions[0].documentId).toBe(project.id);
       expect(revisions[0].operation).toBe("upsert");
 
       expect(revisions[1].id).not.toBe(project.revision);
       expect(revisions[1].model).toBe("Project");
-      expect(revisions[1].document).toBe(
-        JSON.stringify({ name: "sequelize-paper-trail", version: 2 })
-      );
+      expect(revisions[1].document).toEqual({
+        name: "sequelize-paper-trail",
+        version: 2,
+      });
       expect(revisions[1].documentId).toBe(project.id);
       expect(revisions[1].operation).toBe("upsert");
     });

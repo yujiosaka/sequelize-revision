@@ -24,7 +24,7 @@ export interface Options {
   continuationKey: string;
   metaDataFields?: { [key: string]: boolean };
   metaDataContinuationKey: string;
-  postgres: boolean;
+  useJsonDataType: boolean;
   tableName?: string;
   changeTableName?: string;
   belongsToUserOptions?: BelongsToOptions;
@@ -65,7 +65,7 @@ export const defaultOptions = {
   continuationKey: "userId",
   metaDataFields: undefined,
   metaDataContinuationKey: "metaData",
-  postgres: false,
+  useJsonDataType: false,
   tableName: undefined,
   changeTableName: undefined,
   belongsToUserOptions: undefined,
