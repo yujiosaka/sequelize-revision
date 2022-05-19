@@ -226,7 +226,6 @@ export class SequelizeRevision {
             this.options.revisionAttribute,
             {
               type: DataTypes.INTEGER,
-              defaultValue: 0,
             }
           );
         } catch (err) {
