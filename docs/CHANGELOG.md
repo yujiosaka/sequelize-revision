@@ -1,3 +1,10 @@
+## [5.0.1](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.0...v5.0.1) (2022-05-19)
+
+
+### Bug Fixes
+
+* remove default value from external key model definition ([bf4dbc3](https://github.com/yujiosaka/sequelize-revision/commit/bf4dbc3e5bb04a5bbf10246a03337b04beb6a850))
+
 # [5.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v4.0.0...v5.0.0) (2022-05-19)
 
 
