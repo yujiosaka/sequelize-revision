@@ -202,7 +202,6 @@ export class SequelizeRevision {
 
     model.rawAttributes[this.options.revisionAttribute] = {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
     };
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
