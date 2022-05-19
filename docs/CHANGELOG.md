@@ -1,3 +1,15 @@
+# [5.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v4.0.0...v5.0.0) (2022-05-19)
+
+
+### Bug Fixes
+
+* remove default value from external key ([e1364ef](https://github.com/yujiosaka/sequelize-revision/commit/e1364efc334b18e51557545686e2453b7e281154))
+
+
+### BREAKING CHANGES
+
+* default value is no longer set for external key for migrations
+
 # [4.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v3.1.0...v4.0.0) (2022-04-13)
 
 
