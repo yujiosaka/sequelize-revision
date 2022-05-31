@@ -67,6 +67,7 @@
   },
   "dependencies": {
     "cls-hooked": "4.2.2",
-    "deep-diff": "1.0.2"
+    "deep-diff": "1.0.2",
+    "diff": "5.1.0"
   }
 }
