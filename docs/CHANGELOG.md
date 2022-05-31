@@ -1,3 +1,10 @@
+## [5.0.2](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.1...v5.0.2) (2022-05-31)
+
+
+### Bug Fixes
+
+* fix diff package missed in dependencies ([86639e6](https://github.com/yujiosaka/sequelize-revision/commit/86639e6c67ff5def049adb3e1760746b8195550e))
+
 ## [5.0.1](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.0...v5.0.1) (2022-05-19)
 
 
