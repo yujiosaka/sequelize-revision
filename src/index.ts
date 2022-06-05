@@ -12,6 +12,7 @@ export class SequelizeRevision {
 
   private options: Options;
   private ns?: Namespace;
+  private useJsonDataType: boolean;
   private failHard = false;
 
   constructor(
@@ -20,10 +21,8 @@ export class SequelizeRevision {
   ) {
     this.options = <Options>{
       ...defaultOptions,
-      useJsonDataType: this.sequelize.getDialect() !== "mssql",
       ...sequelizeRevisionOptions,
     };
-
     if (this.options.continuationNamespace) {
       this.ns = getNamespace(this.options.continuationNamespace);
       if (!this.ns) {
@@ -35,6 +34,8 @@ export class SequelizeRevision {
       helpers.snakeCaseValues(this.options.defaultAttributes);
     }
 
+    this.useJsonDataType = this.sequelize.getDialect() !== "mssql";
+
     // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
       model: {
@@ -42,9 +43,7 @@ export class SequelizeRevision {
         allowNull: false,
       },
       document: {
-        type: this.options.useJsonDataType
-          ? DataTypes.JSON
-          : DataTypes.TEXT("medium"),
+        type: this.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       [this.options.defaultAttributes.documentId]: {
@@ -92,13 +91,13 @@ export class SequelizeRevision {
           allowNull: false,
         },
         document: {
-          type: this.options.useJsonDataType
+          type: this.useJsonDataType
             ? DataTypes.JSON
             : DataTypes.TEXT("medium"),
           allowNull: false,
         },
         diff: {
-          type: this.options.useJsonDataType
+          type: this.useJsonDataType
             ? DataTypes.JSON
             : DataTypes.TEXT("medium"),
           allowNull: false,
@@ -467,7 +466,7 @@ export class SequelizeRevision {
 
         let document = currentVersion;
 
-        if (!this.options.useJsonDataType) {
+        if (!this.useJsonDataType) {
           document = JSON.stringify(document);
         }
 
@@ -534,7 +533,7 @@ export class SequelizeRevision {
                 document = difference;
                 let diff: any = o || n ? jsdiff.diffChars(o, n) : [];
 
-                if (!this.options.useJsonDataType) {
+                if (!this.useJsonDataType) {
                   document = JSON.stringify(document);
                   diff = JSON.stringify(diff);
                 }
