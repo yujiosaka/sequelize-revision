@@ -3,7 +3,13 @@ import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
 import { ModelDefined } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
-import helpers from "./helpers";
+import {
+  capitalizeFirstLetter,
+  snakeCaseValues,
+  calcDelta,
+  diffToString,
+  debugConsole,
+} from "./helpers";
 import { Options, defaultOptions } from "./options";
 
 export class SequelizeRevision {
@@ -18,7 +24,7 @@ export class SequelizeRevision {
   constructor(private sequelize: Sequelize, options?: Partial<Options>) {
     this.options = { ...defaultOptions, ...options };
     if (this.options.underscoredAttributes) {
-      helpers.snakeCaseValues(this.options.defaultAttributes);
+      snakeCaseValues(this.options.defaultAttributes);
     }
 
     this.useJsonDataType = this.sequelize.getDialect() !== "mssql";
@@ -59,7 +65,7 @@ export class SequelizeRevision {
       };
     }
 
-    helpers.debugConsole("attributes", revisionAttributes);
+    debugConsole("attributes", revisionAttributes);
 
     // Revision model
     this.Revision = this.sequelize.define(
@@ -196,7 +202,7 @@ export class SequelizeRevision {
     model: ModelDefined<any, any>,
     options: { exclude?: string[] } = {}
   ): Promise<void> {
-    helpers.debugConsole("Enabling paper trail on", model.name);
+    debugConsole("Enabling paper trail on", model.name);
 
     model.rawAttributes[this.options.revisionAttribute] = {
       type: DataTypes.INTEGER,
@@ -213,7 +219,7 @@ export class SequelizeRevision {
 
       const attributes = await queryInterface.describeTable(tableName);
       if (!attributes[this.options.revisionAttribute]) {
-        helpers.debugConsole("adding revision attribute to the database");
+        debugConsole("adding revision attribute to the database");
 
         try {
           await queryInterface.addColumn(
@@ -224,7 +230,7 @@ export class SequelizeRevision {
             }
           );
         } catch (err) {
-          helpers.debugConsole("something went really wrong..", err);
+          debugConsole("something went really wrong..", err);
         }
       }
     }
@@ -279,12 +285,12 @@ export class SequelizeRevision {
         instance = opt.instance;
       }
 
-      helpers.debugConsole("beforeHook called");
-      helpers.debugConsole("instance:", instance);
-      helpers.debugConsole("opt:", opt);
+      debugConsole("beforeHook called");
+      debugConsole("instance:", instance);
+      debugConsole("opt:", opt);
 
       if (opt.noRevision) {
-        helpers.debugConsole("noRevision opt: is true, not logging");
+        debugConsole("noRevision opt: is true, not logging");
         return;
       }
 
@@ -321,7 +327,7 @@ export class SequelizeRevision {
       );
 
       // Get diffs
-      const delta = helpers.calcDelta(
+      const delta = calcDelta(
         previousVersion,
         currentVersion,
         exclude,
@@ -334,8 +340,8 @@ export class SequelizeRevision {
         throw new Error("Revision Id was undefined");
       }
 
-      helpers.debugConsole("delta:", delta);
-      helpers.debugConsole("revisionId", currentRevisionId);
+      debugConsole("delta:", delta);
+      debugConsole("revisionId", currentRevisionId);
 
       // Check if all required fields have been provided to the opts / CLS
       if (this.options.metaDataFields) {
@@ -353,12 +359,12 @@ export class SequelizeRevision {
             (field) => metaData[field] !== undefined
           );
           if (requiredFieldsProvided.length !== requiredFields.length) {
-            helpers.debugConsole(
+            debugConsole(
               "Required fields: ",
               this.options.metaDataFields,
               requiredFields
             );
-            helpers.debugConsole(
+            debugConsole(
               "Required fields provided: ",
               metaData,
               requiredFieldsProvided
@@ -384,7 +390,7 @@ export class SequelizeRevision {
         }
       }
 
-      helpers.debugConsole("end of beforeHook");
+      debugConsole("end of beforeHook");
     };
   }
 
@@ -395,11 +401,11 @@ export class SequelizeRevision {
         instance = instance[0];
       }
 
-      helpers.debugConsole("afterHook called");
-      helpers.debugConsole("instance:", instance);
-      helpers.debugConsole("opt:", opt);
+      debugConsole("afterHook called");
+      debugConsole("instance:", instance);
+      debugConsole("opt:", opt);
       if (this.ns) {
-        helpers.debugConsole(
+        debugConsole(
           `CLS ${this.options.continuationKey}:`,
           this.ns.get(this.options.continuationKey)
         );
@@ -480,16 +486,16 @@ export class SequelizeRevision {
           if (metaData) {
             forEach(this.options.metaDataFields, (required, field) => {
               const value = metaData[field];
-              helpers.debugConsole(
+              debugConsole(
                 `Adding metaData field to Revision - ${field} => ${value}`
               );
               if (!(field in query)) {
                 query[field] = value;
               } else {
-                helpers.debugConsole(
+                debugConsole(
                   `Revision object already has a value at ${field} => ${query[field]}`
                 );
-                helpers.debugConsole("Not overwriting the original value");
+                debugConsole("Not overwriting the original value");
               }
             });
           }
@@ -516,10 +522,10 @@ export class SequelizeRevision {
           if (this.options.enableRevisionChangeModel) {
             await Promise.all(
               map(delta, async (difference) => {
-                const o = helpers.diffToString(
+                const o = diffToString(
                   difference.item ? difference.item.lhs : difference.lhs
                 );
-                const n = helpers.diffToString(
+                const n = diffToString(
                   difference.item ? difference.item.rhs : difference.rhs
                 );
 
@@ -543,24 +549,24 @@ export class SequelizeRevision {
                   const savedD = await d.save({ transaction: opt.transaction });
                   // Add diff to revision
                   objectRevision[
-                    `add${helpers.capitalizeFirstLetter(
+                    `add${capitalizeFirstLetter(
                       this.options.revisionChangeModel
                     )}`
                   ](savedD);
                 } catch (err) {
-                  helpers.debugConsole("RevisionChange save error", err);
+                  debugConsole("RevisionChange save error", err);
                   throw err;
                 }
               })
             );
           }
         } catch (err) {
-          helpers.debugConsole("Revision save error", err);
+          debugConsole("Revision save error", err);
           throw err;
         }
       }
 
-      helpers.debugConsole("end of afterHook");
+      debugConsole("end of afterHook");
     };
   }
 }

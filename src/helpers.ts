@@ -2,75 +2,73 @@ import { diff } from "deep-diff";
 import { forEach, snakeCase } from "lodash";
 import debug from "debug";
 
-const debugConsole = debug("sequelize-revision:console");
+const console = debug("sequelize-revision:console");
 
-export default class Helpers {
-  static capitalizeFirstLetter(str: string): string {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+export function capitalizeFirstLetter(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function snakeCaseValues(obj: { [key: string]: string }): {
+  [key: string]: string;
+} {
+  forEach(obj, (val, key) => {
+    obj[key] = snakeCase(val);
+  });
+  return obj;
+}
+
+export function calcDelta(
+  current: { [key: string]: any },
+  next: { [key: string]: any },
+  exclude: string[],
+  strict: boolean
+): { [key: string]: any }[] | null {
+  const di = diff(current, next);
+
+  let diffs = [];
+  if (di) {
+    diffs = di
+      .map((i) => JSON.parse(JSON.stringify(i).replace('"__data",', "")))
+      .filter((i) => {
+        if (!strict && i.kind === "E") {
+          if (i.lhs != i.rhs) return i;
+        } else return i;
+        return false;
+      })
+      .filter((i) => exclude.every((x) => i.path.indexOf(x) === -1));
   }
 
-  static snakeCaseValues(obj: { [key: string]: string }): {
-    [key: string]: string;
-  } {
-    forEach(obj, (v, k) => {
-      obj[k] = snakeCase(v);
-    });
-    return obj;
+  if (diffs.length > 0) {
+    return diffs;
   }
+  return null;
+}
 
-  static calcDelta(
-    current: { [key: string]: any },
-    next: { [key: string]: any },
-    exclude: string[],
-    strict: boolean
-  ): { [key: string]: any }[] | null {
-    const di = diff(current, next);
-
-    let diffs = [];
-    if (di) {
-      diffs = di
-        .map((i) => JSON.parse(JSON.stringify(i).replace('"__data",', "")))
-        .filter((i) => {
-          if (!strict && i.kind === "E") {
-            if (i.lhs != i.rhs) return i;
-          } else return i;
-          return false;
-        })
-        .filter((i) => exclude.every((x) => i.path.indexOf(x) === -1));
-    }
-
-    if (diffs.length > 0) {
-      return diffs;
-    }
-    return null;
-  }
-
-  static diffToString(val: any): string {
-    if (typeof val === "undefined" || val === null) {
-      return "";
-    }
-    if (val === true) {
-      return "1";
-    }
-    if (val === false) {
-      return "0";
-    }
-    if (typeof val === "string") {
-      return val;
-    }
-    if (!Number.isNaN(Number(val))) {
-      return String(val);
-    }
-    if ((typeof val === "undefined" ? "undefined" : typeof val) === "object") {
-      return JSON.stringify(val);
-    }
-    if (Array.isArray(val)) {
-      return JSON.stringify(val);
-    }
+export function diffToString(val: any): string {
+  if (typeof val === "undefined" || val === null) {
     return "";
   }
-
-  static debugConsole(formatter: any, ...args: any[]) {
-    debugConsole(formatter, ...args);
+  if (val === true) {
+    return "1";
   }
+  if (val === false) {
+    return "0";
+  }
+  if (typeof val === "string") {
+    return val;
+  }
+  if (!Number.isNaN(Number(val))) {
+    return String(val);
+  }
+  if (typeof val === "object") {
+    return JSON.stringify(val);
+  }
+  if (Array.isArray(val)) {
+    return JSON.stringify(val);
+  }
+  return "";
+}
+
+export function debugConsole(formatter: any, ...args: any[]) {
+  console(formatter, ...args);
 }
