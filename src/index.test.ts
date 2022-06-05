@@ -844,4 +844,54 @@ describe("SequelizeRevision", () => {
       expect(revisions.length).toBe(3);
     });
   });
+
+  describe("using underscored table names and attributes", () => {
+    beforeEach(async () => {
+      sequelizeRevision = new SequelizeRevision(sequelize, {
+        underscored: true,
+        underscoredAttributes: true,
+        tableName: "revisions",
+        changeTableName: "revision_changes",
+        enableMigration: true,
+        enableRevisionChangeModel: true,
+      });
+      ({ Revision, RevisionChange } = await sequelizeRevision.defineModels());
+
+      await sequelizeRevision.trackRevision(Project);
+    });
+
+    it("has underscored table names", async () => {
+      expect(Revision.tableName).toBe("revisions");
+      expect(RevisionChange.tableName).toBe("revision_changes");
+    });
+
+    it("has underscored attributes in revisions", async () => {
+      const project = await Project.create({
+        name: "sequelize-paper-trail",
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].document_id).toBe(project.id);
+      expect(revisions[0].created_at).toBeTruthy();
+      expect(revisions[0].updated_at).toBeTruthy();
+    });
+
+    it("has underscored attributes in revision changes", async () => {
+      const project = await Project.create({
+        name: "sequelize-paper-trail",
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      const revision_changes = await RevisionChange.findAll();
+      expect(revision_changes.length).toBe(1);
+
+      expect(revision_changes[0].revision_id).toBe(revisions[0].id);
+      expect(revision_changes[0].created_at).toBeTruthy();
+      expect(revision_changes[0].updated_at).toBeTruthy();
+    });
+  });
 });

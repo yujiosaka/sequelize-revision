@@ -79,6 +79,12 @@ export class SequelizeRevision {
       revisionAttributes,
       {
         underscored: this.options.underscored,
+        createdAt: this.options.underscoredAttributes
+          ? "created_at"
+          : undefined,
+        updatedAt: this.options.underscoredAttributes
+          ? "updated_at"
+          : undefined,
         tableName: this.options.tableName,
       }
     );
@@ -117,6 +123,12 @@ export class SequelizeRevision {
         revisionChangeAttributes,
         {
           underscored: this.options.underscored,
+          createdAt: this.options.underscoredAttributes
+            ? "created_at"
+            : undefined,
+          updatedAt: this.options.underscoredAttributes
+            ? "updated_at"
+            : undefined,
           tableName: this.options.changeTableName,
         }
       );
