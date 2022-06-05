@@ -1,5 +1,8 @@
 import { diff } from "deep-diff";
 import { forEach, snakeCase } from "lodash";
+import debug from "debug";
+
+const debugConsole = debug("sequelize-revision:console");
 
 export default class Helpers {
   static capitalizeFirstLetter(str: string): string {
@@ -65,5 +68,9 @@ export default class Helpers {
       return JSON.stringify(val);
     }
     return "";
+  }
+
+  static debugConsole(formatter: any, ...args: any[]) {
+    debugConsole(formatter, ...args);
   }
 }

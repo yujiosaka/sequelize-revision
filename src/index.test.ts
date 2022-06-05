@@ -1,4 +1,4 @@
-import { map, noop } from "lodash";
+import { map } from "lodash";
 import { Sequelize, STRING, BIGINT } from "sequelize";
 import { createNamespace } from "cls-hooked";
 import { SequelizeRevision } from "../src/index";
@@ -820,31 +820,6 @@ describe("SequelizeRevision", () => {
     });
   });
 
-  describe("logging revisions with debug mode", () => {
-    beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
-        enableMigration: true,
-        debug: true,
-        log: noop,
-      });
-      ({ Revision } = await sequelizeRevision.defineModels());
-
-      await sequelizeRevision.trackRevision(Project);
-    });
-
-    it("does not fail with debug=true", async () => {
-      const project = await Project.create({
-        name: "sequelize-paper-trail",
-        version: 1,
-      });
-      await project.update({ name: "sequelize-revision", version: 2 });
-      await project.destroy();
-
-      const revisions = await Revision.findAll();
-      expect(revisions.length).toBe(3);
-    });
-  });
-
   describe("using underscored table names and attributes", () => {
     beforeEach(async () => {
       sequelizeRevision = new SequelizeRevision(sequelize, {
@@ -879,7 +854,7 @@ describe("SequelizeRevision", () => {
     });
 
     it("has underscored attributes in revision changes", async () => {
-      const project = await Project.create({
+      await Project.create({
         name: "sequelize-paper-trail",
       });
 

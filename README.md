@@ -86,8 +86,6 @@ Sequelize Revision supports various options that can be passed into the initiali
 ```typescript
 // Default options
 const options = {
-  debug: false,
-  log: undefined,
   exclude: [
     "id",
     "createdAt",
@@ -128,7 +126,6 @@ const options = {
 
 | Option                          | Type    | Default Value                                                                                                          | Description                                                                                                                                                                                                                                                                                                        |
 | ------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **[debug]**                     | Boolean | `false`                                                                                                                | Enables logging to the console.                                                                                                                                                                                                                                                                                    |
 | **[exclude]**                   | Array   | `["id", "createdAt", "updatedAt", "deletedAt", "created_at", "updated_at", "deleted_at", [options.revisionAttribute]]` | Array of global attributes to exclude from the Sequelize Revision.                                                                                                                                                                                                                                                 |
 | **[revisionAttribute]**         | String  | `"revision"`                                                                                                           | Name of the attribute in the table that corresponds to the current revision.                                                                                                                                                                                                                                       |
 | **[revisionModel]**             | String  | `"Revision"`                                                                                                           | Name of the model that keeps the revision models.                                                                                                                                                                                                                                                                  |

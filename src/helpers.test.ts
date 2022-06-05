@@ -215,4 +215,15 @@ describe("Helpers", () => {
       expect(res).toEqual(null);
     });
   });
+
+  describe("Helper.debugConsole", () => {
+    test("does not throw an error", () => {
+      expect(() => {
+        helpers.debugConsole(
+          "logging revisions for",
+          new URL("https://github.com/yujiosaka/sequelize-revision")
+        );
+      }).not.toThrow();
+    });
+  });
 });

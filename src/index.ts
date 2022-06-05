@@ -12,7 +12,6 @@ export class SequelizeRevision {
 
   private options: Options;
   private ns?: Namespace;
-  private log: (...data: any[]) => void;
   private failHard = false;
 
   constructor(
@@ -35,8 +34,6 @@ export class SequelizeRevision {
     if (this.options.underscoredAttributes) {
       helpers.snakeCaseValues(this.options.defaultAttributes);
     }
-
-    this.log = this.options.log || console.log;
 
     // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
@@ -69,9 +66,7 @@ export class SequelizeRevision {
       };
     }
 
-    if (this.options.debug) {
-      this.log("attributes", revisionAttributes);
-    }
+    helpers.debugConsole("attributes", revisionAttributes);
 
     // Revision model
     this.Revision = this.sequelize.define(
@@ -208,9 +203,7 @@ export class SequelizeRevision {
     model: ModelDefined<any, any>,
     options: { exclude?: string[] } = {}
   ): Promise<void> {
-    if (this.options.debug) {
-      this.log("Enabling paper trail on", model.name);
-    }
+    helpers.debugConsole("Enabling paper trail on", model.name);
 
     model.rawAttributes[this.options.revisionAttribute] = {
       type: DataTypes.INTEGER,
@@ -227,9 +220,7 @@ export class SequelizeRevision {
 
       const attributes = await queryInterface.describeTable(tableName);
       if (!attributes[this.options.revisionAttribute]) {
-        if (this.options.debug) {
-          this.log("adding revision attribute to the database");
-        }
+        helpers.debugConsole("adding revision attribute to the database");
 
         try {
           await queryInterface.addColumn(
@@ -240,7 +231,7 @@ export class SequelizeRevision {
             }
           );
         } catch (err) {
-          this.log("something went really wrong..", err);
+          helpers.debugConsole("something went really wrong..", err);
         }
       }
     }
@@ -295,16 +286,12 @@ export class SequelizeRevision {
         instance = opt.instance;
       }
 
-      if (this.options.debug) {
-        this.log("beforeHook called");
-        this.log("instance:", instance);
-        this.log("opt:", opt);
-      }
+      helpers.debugConsole("beforeHook called");
+      helpers.debugConsole("instance:", instance);
+      helpers.debugConsole("opt:", opt);
 
       if (opt.noRevision) {
-        if (this.options.debug) {
-          this.log("noRevision opt: is true, not logging");
-        }
+        helpers.debugConsole("noRevision opt: is true, not logging");
         return;
       }
 
@@ -354,10 +341,9 @@ export class SequelizeRevision {
         throw new Error("Revision Id was undefined");
       }
 
-      if (this.options.debug) {
-        this.log("delta:", delta);
-        this.log("revisionId", currentRevisionId);
-      }
+      helpers.debugConsole("delta:", delta);
+      helpers.debugConsole("revisionId", currentRevisionId);
+
       // Check if all required fields have been provided to the opts / CLS
       if (this.options.metaDataFields) {
         // get all required field keys as an array
@@ -374,12 +360,12 @@ export class SequelizeRevision {
             (field) => metaData[field] !== undefined
           );
           if (requiredFieldsProvided.length !== requiredFields.length) {
-            this.log(
+            helpers.debugConsole(
               "Required fields: ",
               this.options.metaDataFields,
               requiredFields
             );
-            this.log(
+            helpers.debugConsole(
               "Required fields provided: ",
               metaData,
               requiredFieldsProvided
@@ -405,9 +391,7 @@ export class SequelizeRevision {
         }
       }
 
-      if (this.options.debug) {
-        this.log("end of beforeHook");
-      }
+      helpers.debugConsole("end of beforeHook");
     };
   }
 
@@ -418,16 +402,14 @@ export class SequelizeRevision {
         instance = instance[0];
       }
 
-      if (this.options.debug) {
-        this.log("afterHook called");
-        this.log("instance:", instance);
-        this.log("opt:", opt);
-        if (this.ns) {
-          this.log(
-            `CLS ${this.options.continuationKey}:`,
-            this.ns.get(this.options.continuationKey)
-          );
-        }
+      helpers.debugConsole("afterHook called");
+      helpers.debugConsole("instance:", instance);
+      helpers.debugConsole("opt:", opt);
+      if (this.ns) {
+        helpers.debugConsole(
+          `CLS ${this.options.continuationKey}:`,
+          this.ns.get(this.options.continuationKey)
+        );
       }
 
       const destroyOperation = operation === "destroy";
@@ -505,18 +487,16 @@ export class SequelizeRevision {
           if (metaData) {
             forEach(this.options.metaDataFields, (required, field) => {
               const value = metaData[field];
-              if (this.options.debug) {
-                this.log(
-                  `Adding metaData field to Revision - ${field} => ${value}`
-                );
-              }
+              helpers.debugConsole(
+                `Adding metaData field to Revision - ${field} => ${value}`
+              );
               if (!(field in query)) {
                 query[field] = value;
-              } else if (this.options.debug) {
-                this.log(
+              } else {
+                helpers.debugConsole(
                   `Revision object already has a value at ${field} => ${query[field]}`
                 );
-                this.log("Not overwriting the original value");
+                helpers.debugConsole("Not overwriting the original value");
               }
             });
           }
@@ -575,21 +555,19 @@ export class SequelizeRevision {
                     )}`
                   ](savedD);
                 } catch (err) {
-                  this.log("RevisionChange save error", err);
+                  helpers.debugConsole("RevisionChange save error", err);
                   throw err;
                 }
               })
             );
           }
         } catch (err) {
-          this.log("Revision save error", err);
+          helpers.debugConsole("Revision save error", err);
           throw err;
         }
       }
 
-      if (this.options.debug) {
-        this.log("end of afterHook");
-      }
+      helpers.debugConsole("end of afterHook");
     };
   }
 }

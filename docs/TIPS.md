@@ -1,9 +1,18 @@
 # TIPS
 
+- [Enable debug logging](#enable-debug-logging)
 - [User tracking](#user-tracking)
 - [Disable logging for a single call](#disable-logging-for-a-single-call)
 - [Saving meta data](#saving-meta-data)
 - [Exclude attributes](#exclude-attributes)
+
+## Enable debug logging
+
+All logs are printed via the [debug](https://github.com/visionmedia/debug) module under the `sequelize-revision` namespace.
+
+```sh
+env DEBUG="sequelize-revision:*" node script.js
+```
 
 ## User tracking
 

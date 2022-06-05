@@ -1,8 +1,6 @@
 import { BelongsToOptions } from "sequelize";
 
 export interface Options {
-  debug: boolean;
-  log?: (...data: any[]) => void;
   exclude: string[];
   revisionAttribute: string;
   revisionModel: string;
@@ -33,8 +31,6 @@ export interface Options {
 export type SequelizeRevisionOptions = Partial<Options>;
 
 export const defaultOptions = {
-  debug: false,
-  log: undefined,
   exclude: [
     "id",
     "createdAt",
