@@ -4,7 +4,6 @@ import { createNamespace } from "cls-hooked";
 import { SequelizeRevision } from "../src/index";
 
 describe("SequelizeRevision", () => {
-  let sequelizeRevision: SequelizeRevision;
   let sequelize: Sequelize;
   let RevisionChange: any;
   let Revision: any;
@@ -40,7 +39,7 @@ describe("SequelizeRevision", () => {
 
   describe("logging revisions", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
       ({ Revision } = await sequelizeRevision.defineModels());
@@ -212,7 +211,7 @@ describe("SequelizeRevision", () => {
 
   describe("logging revisions for upsert", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
       ({ Revision } = await sequelizeRevision.defineModels());
@@ -300,7 +299,7 @@ describe("SequelizeRevision", () => {
 
   describe("logging revision changes", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
@@ -481,7 +480,7 @@ describe("SequelizeRevision", () => {
     const ns = createNamespace("ns1");
 
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         continuationNamespace: "ns1",
         userModel: "User",
@@ -546,7 +545,7 @@ describe("SequelizeRevision", () => {
     const ns = createNamespace("ns2");
 
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         continuationNamespace: "ns2",
         userModel: "User",
@@ -626,7 +625,7 @@ describe("SequelizeRevision", () => {
     const ns = createNamespace("ns3");
 
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         continuationNamespace: "ns3",
         metaDataContinuationKey: "metaData",
@@ -745,7 +744,7 @@ describe("SequelizeRevision", () => {
     ];
 
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         exclude,
       });
@@ -771,7 +770,7 @@ describe("SequelizeRevision", () => {
 
   describe("logging revisions for excludeed attributes for each model", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
       ({ Revision } = await sequelizeRevision.defineModels());
@@ -796,7 +795,7 @@ describe("SequelizeRevision", () => {
 
   describe("logging revisions with unstrict diff", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
         enableStrictDiff: false,
       });
@@ -822,7 +821,7 @@ describe("SequelizeRevision", () => {
 
   describe("using underscored table names and attributes", () => {
     beforeEach(async () => {
-      sequelizeRevision = new SequelizeRevision(sequelize, {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
         underscored: true,
         underscoredAttributes: true,
         tableName: "revisions",
