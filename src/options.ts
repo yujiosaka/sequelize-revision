@@ -27,8 +27,6 @@ export interface Options {
   belongsToUserOptions?: BelongsToOptions;
 }
 
-export type SequelizeRevisionOptions = Partial<Options>;
-
 export const defaultOptions = {
   exclude: [
     "id",

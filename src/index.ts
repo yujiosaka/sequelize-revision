@@ -4,37 +4,31 @@ import { ModelDefined } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
 import helpers from "./helpers";
-import { Options, SequelizeRevisionOptions, defaultOptions } from "./options";
+import { Options, defaultOptions } from "./options";
 
 export class SequelizeRevision {
   Revision: ModelDefined<any, any>;
   RevisionChange?: ModelDefined<any, any>;
 
   private options: Options;
-  private ns?: Namespace;
   private useJsonDataType: boolean;
+  private ns?: Namespace;
   private failHard = false;
 
-  constructor(
-    private sequelize: Sequelize,
-    sequelizeRevisionOptions?: SequelizeRevisionOptions
-  ) {
-    this.options = <Options>{
-      ...defaultOptions,
-      ...sequelizeRevisionOptions,
-    };
+  constructor(private sequelize: Sequelize, options?: Partial<Options>) {
+    this.options = { ...defaultOptions, ...options };
+    if (this.options.underscoredAttributes) {
+      helpers.snakeCaseValues(this.options.defaultAttributes);
+    }
+
+    this.useJsonDataType = this.sequelize.getDialect() !== "mssql";
+
     if (this.options.continuationNamespace) {
       this.ns = getNamespace(this.options.continuationNamespace);
       if (!this.ns) {
         this.ns = createNamespace(this.options.continuationNamespace);
       }
     }
-
-    if (this.options.underscoredAttributes) {
-      helpers.snakeCaseValues(this.options.defaultAttributes);
-    }
-
-    this.useJsonDataType = this.sequelize.getDialect() !== "mssql";
 
     // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
