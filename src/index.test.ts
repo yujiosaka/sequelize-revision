@@ -1,38 +1,80 @@
 import { map } from "lodash";
-import { Sequelize, STRING, BIGINT } from "sequelize";
+import { Sequelize, STRING, BIGINT, Model, Optional, INTEGER } from "sequelize";
 import { createNamespace } from "cls-hooked";
 import { SequelizeRevision } from "../src/index";
+
+type ProjectAttributes = {
+  id: number;
+  name?: string;
+  version?: string | number;
+  revision?: number;
+};
+
+class Project extends Model<
+  ProjectAttributes,
+  Optional<ProjectAttributes, "id">
+> {
+  declare id: number;
+  declare name?: string;
+  declare version?: string | number;
+  declare revision?: number;
+}
+
+type UserAttributes = {
+  id: number;
+  name: string;
+};
+
+class User extends Model<UserAttributes, Optional<UserAttributes, "id">> {
+  declare id: number;
+  declare name: string;
+}
 
 describe("SequelizeRevision", () => {
   let sequelize: Sequelize;
   let RevisionChange: any;
   let Revision: any;
-  let Project: any;
-  let User: any;
-  let user: any;
+  let user: User;
 
   beforeEach(async () => {
     sequelize = new Sequelize("sqlite::memory:", { logging: false });
 
-    sequelize.define("Project", {
-      name: {
-        type: STRING,
+    Project.init(
+      {
+        id: {
+          type: INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        name: {
+          type: STRING,
+        },
+        version: {
+          type: BIGINT,
+        },
+        revision: {
+          type: INTEGER,
+        },
       },
-      version: {
-        type: BIGINT({ length: 20 }),
-      },
-    });
+      { sequelize }
+    );
 
-    sequelize.define("User", {
-      name: {
-        type: STRING,
+    User.init(
+      {
+        id: {
+          type: INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        name: {
+          type: STRING,
+          allowNull: false,
+        },
       },
-    });
+      { sequelize }
+    );
 
     await sequelize.sync();
-
-    Project = sequelize.model("Project");
-    User = sequelize.model("User");
 
     user = await User.create({ name: "yujiosaka" });
   });
