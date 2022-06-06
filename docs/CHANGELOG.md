@@ -1,3 +1,16 @@
+# [5.1.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.2...v5.1.0) (2022-06-06)
+
+
+### Bug Fixes
+
+* stop exposing undocument options ([20ba4ae](https://github.com/yujiosaka/sequelize-revision/commit/20ba4aef1423fb7569f2146f4fd340d65d1f8bd8))
+
+
+### Features
+
+* use debug module for logging ([d426758](https://github.com/yujiosaka/sequelize-revision/commit/d426758940b0c9faa03bfbb356bd6bb62801d2a5))
+* use underscored attributes for timestamps ([ee6fe21](https://github.com/yujiosaka/sequelize-revision/commit/ee6fe21d3f53cfc8c0c25915220b267274ef8c53))
+
 ## [5.0.2](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.1...v5.0.2) (2022-05-31)
 
 
