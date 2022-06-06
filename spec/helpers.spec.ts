@@ -4,7 +4,7 @@ import {
   calcDelta,
   debugConsole,
   diffToString,
-} from "./helpers";
+} from "../src/helpers";
 
 describe("capitalizeFirstLetter", () => {
   it("capitalizes empty string", () => {

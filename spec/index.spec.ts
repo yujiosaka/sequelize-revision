@@ -1,34 +1,9 @@
 import { map } from "lodash";
-import { Sequelize, STRING, BIGINT, Model, Optional, INTEGER } from "sequelize";
+import { Sequelize, STRING, BIGINT, INTEGER } from "sequelize";
 import { createNamespace } from "cls-hooked";
+import { Project, User } from "./models";
 import { SequelizeRevision } from "../src/index";
-
-type ProjectAttributes = {
-  id: number;
-  name?: string;
-  version?: string | number;
-  revision?: number;
-};
-
-class Project extends Model<
-  ProjectAttributes,
-  Optional<ProjectAttributes, "id">
-> {
-  declare id: number;
-  declare name?: string;
-  declare version?: string | number;
-  declare revision?: number;
-}
-
-type UserAttributes = {
-  id: number;
-  name: string;
-};
-
-class User extends Model<UserAttributes, Optional<UserAttributes, "id">> {
-  declare id: number;
-  declare name: string;
-}
+import "../src/sequelize-extension";
 
 describe("SequelizeRevision", () => {
   let sequelize: Sequelize;
