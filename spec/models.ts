@@ -1,31 +1,24 @@
-import { Model, Optional } from "sequelize";
-
-type ProjectAttributes = {
-  id: number;
-  name?: string;
-  version?: string | number;
-  revision?: number;
-};
-
-type UserAttributes = {
-  id: number;
-  name: string;
-};
+import {
+  Model,
+  InferAttributes,
+  InferCreationAttributes,
+  CreationOptional,
+} from "sequelize";
 
 export class Project extends Model<
-  ProjectAttributes,
-  Optional<ProjectAttributes, "id">
+  InferAttributes<Project>,
+  InferCreationAttributes<Project>
 > {
-  declare id: number;
+  declare id: CreationOptional<number>;
   declare name?: string;
   declare version?: string | number;
   declare revision?: number;
 }
 
 export class User extends Model<
-  UserAttributes,
-  Optional<UserAttributes, "id">
+  InferAttributes<User>,
+  InferCreationAttributes<User>
 > {
-  declare id: number;
+  declare id: CreationOptional<number>;
   declare name: string;
 }
