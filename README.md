@@ -45,7 +45,7 @@ const sequelizeRevision = new SequelizeRevision(sequelize, options);
 const { Revision, RevisionChanges } = await sequelizeRevision.defineModels();
 ```
 
-which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revisions` and `RevisionChanges` table.
+which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revisions` and `RevisionChanges` models.
 
 *Note: If you pass `userModel` option to the constructor in order to enable user tracking, `userModel` should be setup before `defineModels()` is called.*
 
@@ -80,47 +80,6 @@ sequelizeRevision.RevisionChanges
 ## Options
 
 Sequelize Revision supports various options that can be passed into the initialization. The following are the default options:
-
-### Default options
-
-```typescript
-// Default options
-const options = {
-  exclude: [
-    "id",
-    "createdAt",
-    "updatedAt",
-    "deletedAt",
-    "created_at",
-    "updated_at",
-    "deleted_at",
-    "revision",
-  ],
-  revisionAttribute: "revision",
-  revisionModel: "Revision",
-  revisionChangeModel: "RevisionChange",
-  enableRevisionChangeModel: false,
-  UUID: false,
-  underscored: false,
-  underscoredAttributes: false,
-  defaultAttributes: {
-    documentId: "documentId",
-    revisionId: "revisionId",
-  },
-  userModel: undefined,
-  userModelAttribute: "userId",
-  enableCompression: false,
-  enableMigration: false,
-  enableStrictDiff: true,
-  continuationNamespace: undefined,
-  continuationKey: "userId",
-  metaDataFields: undefined,
-  metaDataContinuationKey: "metaData",
-  tableName: undefined,
-  changeTableName: undefined,
-  belongsToUserOptions: undefined,
-};
-```
 
 ### Options documentation
 
