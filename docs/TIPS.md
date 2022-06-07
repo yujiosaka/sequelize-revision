@@ -1,6 +1,7 @@
 # TIPS
 
 - [Define model types](#define-model-types)
+- [Create model tables](#create-model-tables)
 - [Enable debug logging](#enable-debug-logging)
 - [User tracking](#user-tracking)
 - [Disable logging for a single call](#disable-logging-for-a-single-call)
@@ -49,6 +50,18 @@ interface RevisionChange
 }
 
 const { Revision, RevisionChange } = sequelizeRevision.defineModels<Revision, RevisionChange>();
+
+## Create model tables
+
+Executing `defineModels` function does not trigger table creation migrations.
+
+Call each model's [sync](https://sequelize.org/api/v6/class/src/model.js~model#static-method-sync) function to order to create tables for `Revision` and `RevisionChange` respectively.
+
+```typescript
+const { Revision, RevisionChange } = sequelizeRevision.defineModels();
+
+await Revision.sync();
+await RevisionChange.sync();
 ```
 
 ## Enable debug logging
