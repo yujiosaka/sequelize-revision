@@ -36,7 +36,6 @@ export class SequelizeRevision {
       }
     }
 
-    // Attributes for RevisionModel
     const revisionAttributes: ModelAttributes = {
       model: {
         type: DataTypes.STRING,
@@ -67,7 +66,6 @@ export class SequelizeRevision {
 
     debugConsole("attributes", revisionAttributes);
 
-    // Revision model
     this.Revision = this.sequelize.define(
       this.options.revisionModel,
       revisionAttributes,
@@ -91,7 +89,6 @@ export class SequelizeRevision {
     }
 
     if (this.options.enableRevisionChangeModel) {
-      // Attributes for RevisionChangeModel
       const revisionChangeAttributes: ModelAttributes = {
         path: {
           type: DataTypes.TEXT,
@@ -118,7 +115,7 @@ export class SequelizeRevision {
           defaultValue: DataTypes.UUIDV4,
         };
       }
-      // RevisionChange model
+
       this.RevisionChange = this.sequelize.define(
         this.options.revisionChangeModel,
         revisionChangeAttributes,
@@ -134,7 +131,6 @@ export class SequelizeRevision {
         }
       );
 
-      // Set associations
       this.Revision.hasMany(this.RevisionChange, {
         foreignKey: this.options.defaultAttributes.revisionId,
         constraints: false,
@@ -146,7 +142,6 @@ export class SequelizeRevision {
     }
   }
 
-  // Return defineModels()
   public async defineModels(): Promise<{
     Revision: ModelDefined<any, any>;
     RevisionChange?: ModelDefined<any, any>;
@@ -166,38 +161,6 @@ export class SequelizeRevision {
     return { Revision: this.Revision };
   }
 
-  // order in which sequelize processes the hooks
-  // (1)
-  // beforeBulkCreate(instances, options, fn)
-  // beforeBulkDestroy(instances, options, fn)
-  // beforeBulkUpdate(instances, options, fn)
-  // (2)
-  // beforeValidate(instance, options, fn)
-  // (-)
-  // validate
-  // (3)
-  // afterValidate(instance, options, fn)
-  // - or -
-  // validationFailed(instance, options, error, fn)
-  // (4)
-  // beforeCreate(instance, options, fn)
-  // beforeDestroy(instance, options, fn)
-  // beforeUpdate(instance, options, fn)
-  // (-)
-  // create
-  // destroy
-  // update
-  // (5)
-  // afterCreate(instance, options, fn)
-  // afterDestroy(instance, options, fn)
-  // afterUpdate(instance, options, fn)
-  // (6)
-  // afterBulkCreate(instances, options, fn)
-  // afterBulkDestroy(instances, options, fn)
-  // afterBulkUpdate(instances, options, fn)
-
-  // Extend model prototype with "trackRevision" function
-  // Call model.trackRevision() to enable revisions for model
   public async trackRevision(
     model: ModelDefined<any, any>,
     options: { exclude?: string[] } = {}
@@ -260,7 +223,6 @@ export class SequelizeRevision {
     model.addHook("afterUpdate", this.createAfterHook("update", modelExclude));
     model.addHook("afterUpsert", this.createAfterHook("upsert", modelExclude));
 
-    // create association
     model.hasMany(this.sequelize.models[this.options.revisionModel], {
       foreignKey: this.options.defaultAttributes.documentId,
       constraints: false,
@@ -326,7 +288,6 @@ export class SequelizeRevision {
         instance._previousDataValues[this.options.revisionAttribute]
       );
 
-      // Get diffs
       const delta = calcDelta(
         previousVersion,
         currentVersion,
@@ -345,7 +306,6 @@ export class SequelizeRevision {
 
       // Check if all required fields have been provided to the opts / CLS
       if (this.options.metaDataFields) {
-        // get all required field keys as an array
         const requiredFields = keys(
           pickBy(this.options.metaDataFields, (required) => required)
         );
@@ -470,7 +430,6 @@ export class SequelizeRevision {
           document = JSON.stringify(document);
         }
 
-        // Build revision
         const query: { [key: string]: any } = {
           model: instance.constructor.name,
           document,
@@ -513,12 +472,10 @@ export class SequelizeRevision {
           this.options.revisionAttribute
         );
 
-        // Save revision
         try {
           const objectRevision = await revision.save({
             transaction: opt.transaction,
           });
-          // Loop diffs and create a revision-diff for each
           if (this.options.enableRevisionChangeModel) {
             await Promise.all(
               map(delta, async (document) => {
@@ -545,7 +502,6 @@ export class SequelizeRevision {
 
                 try {
                   const savedD = await d.save({ transaction: opt.transaction });
-                  // Add diff to revision
                   objectRevision[
                     `add${capitalizeFirstLetter(
                       this.options.revisionChangeModel
