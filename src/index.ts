@@ -521,16 +521,14 @@ export class SequelizeRevision {
           // Loop diffs and create a revision-diff for each
           if (this.options.enableRevisionChangeModel) {
             await Promise.all(
-              map(delta, async (difference) => {
+              map(delta, async (document) => {
                 const o = diffToString(
-                  difference.item ? difference.item.lhs : difference.lhs
+                  document.item ? document.item.lhs : document.lhs
                 );
                 const n = diffToString(
-                  difference.item ? difference.item.rhs : difference.rhs
+                  document.item ? document.item.rhs : document.rhs
                 );
 
-                // let document = difference;
-                document = difference;
                 let diff: any = o || n ? jsdiff.diffChars(o, n) : [];
 
                 if (!this.useJsonDataType) {
@@ -539,7 +537,7 @@ export class SequelizeRevision {
                 }
 
                 const d = RevisionChange.build({
-                  path: difference.path[0],
+                  path: document.path[0],
                   document,
                   diff,
                   revisionId: objectRevision.id,
@@ -565,7 +563,6 @@ export class SequelizeRevision {
           throw err;
         }
       }
-
       debugConsole("end of afterHook");
     };
   }
