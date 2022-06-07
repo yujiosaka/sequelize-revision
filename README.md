@@ -33,7 +33,7 @@ Sequelize Revision assumes that you already set up your [Sequelize](https://gith
 ```typescript
 import { Sequelize } from "sequelize";
 
-const sequelize = new Sequelize('sqlite::memory:');
+const sequelize = new Sequelize("sqlite::memory:");
 ```
 
 then adding Sequelize Revision is as easy as:
@@ -61,16 +61,12 @@ sequelizeRevision.trackRevision(Model);
 import Sequelize from "sequelize";
 import { SequelizeRevision } from "sequelize-revision";
 
-const sequelize = new Sequelize("database", "username", "password");
-const sequelizeRevision = new SequelizeRevision(sequelize, options || {});
+const sequelize = new Sequelize("sqlite::memory:");
+const sequelizeRevision = new SequelizeRevision(sequelize, options);
 const { Revision, RevisionChanges } = sequelizeRevision.defineModels();
 
-const User = sequelize.define("User", {
-  username: Sequelize.STRING,
-  birthday: Sequelize.DATE
-});
-
-const { Revision, RevisionChanges } = sequelizeRevision.trackRevision(User);
+const User = sequelize.define("User", { name: Sequelize.STRING });
+sequelizeRevision.trackRevision(User);
 ```
 
 ## Options
@@ -92,7 +88,7 @@ Sequelize Revision supports various options that can be passed into the initiali
 | **[UUID]**                      | Boolean | `false`                                                                                                                | The **[revisionModel]** has id attribute of type UUID for PostgreSQL.                                                                                                                                                                                                                                              |
 | **[underscored]**               | Boolean | `false`                                                                                                                | The **[revisionModel]** and **[revisionChangeModel]** have `"createdAt"` and `"updatedAt"` columns, by default, setting this option to `true` changes it to `"created_at`" and `"updated_at"`. Pass `true` to **[underscoredAttributes]** option as well for using underscored attributes to access those columns. |
 | **[underscoredAttributes]**     | Boolean | `false`                                                                                                                | The **[revisionModel]** has `"documentId"`, and the **[revisionChangeModel]** has a **[defaultAttributes.revisionId]** `"revisionId`, by default, setting this option to `true` changes it to `"document_id"` and `"revision_id"`.                                                                                 |
-| **[userModel]**                 | String  | `undefined`                                                                                                            | Name of the model that stores users in your.                                                                                                                                                                                                                                                                       |
+| **[userModel]**                 | String  | `undefined`                                                                                                            | Name of the model that stores users in your application.                                                                                                                                                                                                                                                           |
 | **[userIdAttribute]**           | String  | `"userId"`                                                                                                             | Name of the attribute in the `RevisionChange` model that corresponds to the ID of the User model. Attribute name can be modified to `"user_id"` by passing **[underscoredAttributes]** option.                                                                                                                     |
 | **[enableCompression]**         | Boolean | `false`                                                                                                                | Compresses the revision attribute in the **[revisionModel]** to only the diff instead of all model attributes.                                                                                                                                                                                                     |
 | **[enableMigration]**           | Boolean | `false`                                                                                                                | Automatically adds the **[revisionAttribute]** via a migration to the models that have paper trails enabled.                                                                                                                                                                                                       |
