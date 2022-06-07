@@ -1,3 +1,17 @@
+# [5.2.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.1.0...v5.2.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* associate models in constructor ([c8f91f6](https://github.com/yujiosaka/sequelize-revision/commit/c8f91f665180d75293f3c68133116e90dd12886f))
+* rename `userModelAttribute` to `userIdAttribute` ([ee25291](https://github.com/yujiosaka/sequelize-revision/commit/ee252918f5a0ae3c6bd89c580481b6f7ba312604))
+
+
+### Features
+
+* replaced `defaultAttributes` with `revisionIdAttribute` ([cc26eb5](https://github.com/yujiosaka/sequelize-revision/commit/cc26eb52def1e4e1dc32eace09f699255c848b6c))
+* return models synchronously ([7aa3207](https://github.com/yujiosaka/sequelize-revision/commit/7aa3207c266812821588603b7b7f4b3519b2cbff))
+
 # [5.1.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.0.2...v5.1.0) (2022-06-06)
 
 
