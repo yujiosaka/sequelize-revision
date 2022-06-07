@@ -11,7 +11,7 @@ export interface Options {
   underscored: boolean;
   underscoredAttributes: boolean;
   userModel?: string;
-  userModelAttribute: string;
+  userIdAttribute: string;
   enableCompression: boolean;
   enableMigration: boolean;
   enableStrictDiff: boolean;
@@ -44,7 +44,7 @@ export const defaultOptions = {
   underscored: false,
   underscoredAttributes: false,
   userModel: undefined,
-  userModelAttribute: "userId",
+  userIdAttribute: "userId",
   enableCompression: false,
   enableMigration: false,
   enableStrictDiff: true,

@@ -42,11 +42,9 @@ export class SequelizeRevision {
 
     if (this.options.underscoredAttributes) {
       this.documentIdAttribute = snakeCase(this.documentIdAttribute);
+      this.options.userIdAttribute = snakeCase(this.options.userIdAttribute);
       this.options.revisionIdAttribute = snakeCase(
         this.options.revisionIdAttribute
-      );
-      this.options.userModelAttribute = snakeCase(
-        this.options.userModelAttribute
       );
     }
 
@@ -101,7 +99,7 @@ export class SequelizeRevision {
 
     if (this.options.userModel) {
       this.Revision.belongsTo(this.sequelize.model(this.options.userModel), {
-        foreignKey: this.options.userModelAttribute,
+        foreignKey: this.options.userIdAttribute,
         ...this.options.belongsToUserOptions,
       });
     }
@@ -479,7 +477,7 @@ export class SequelizeRevision {
         }
 
         // in case of custom user models that are not 'userId'
-        query[this.options.userModelAttribute] =
+        query[this.options.userIdAttribute] =
           (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
 
         query[this.documentIdAttribute] = instance.id;
