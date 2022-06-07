@@ -59,8 +59,9 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -231,8 +232,9 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -320,8 +322,10 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = await sequelizeRevision.defineModels());
+      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
+      await RevisionChange.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -502,8 +506,9 @@ describe("SequelizeRevision", () => {
         continuationNamespace: "ns1",
         userModel: "User",
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -569,8 +574,9 @@ describe("SequelizeRevision", () => {
         underscored: true,
         underscoredAttributes: true,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -648,7 +654,8 @@ describe("SequelizeRevision", () => {
         metaDataFields: { userRole: false, server: false },
       });
 
-      Revision = sequelizeRevision.Revision;
+      ({ Revision } = sequelizeRevision.defineModels());
+
       Revision.rawAttributes["userRole"] = {
         type: STRING,
       };
@@ -660,7 +667,7 @@ describe("SequelizeRevision", () => {
       // @ts-ignore
       Revision.refreshAttributes();
 
-      await sequelizeRevision.defineModels();
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -764,8 +771,9 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         exclude,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -789,8 +797,9 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project, { exclude: ["version"] });
     });
 
@@ -815,8 +824,9 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableStrictDiff: false,
       });
-      ({ Revision } = await sequelizeRevision.defineModels());
+      ({ Revision } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -845,8 +855,10 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = await sequelizeRevision.defineModels());
+      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
 
+      await Revision.sync();
+      await RevisionChange.sync();
       await sequelizeRevision.trackRevision(Project);
     });
 
@@ -876,12 +888,12 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(1);
 
-      const revision_changes = await RevisionChange.findAll();
-      expect(revision_changes.length).toBe(1);
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(1);
 
-      expect(revision_changes[0].revision_id).toBe(revisions[0].id);
-      expect(revision_changes[0].created_at).toBeTruthy();
-      expect(revision_changes[0].updated_at).toBeTruthy();
+      expect(revisionChanges[0].revision_id).toBe(revisions[0].id);
+      expect(revisionChanges[0].created_at).toBeTruthy();
+      expect(revisionChanges[0].updated_at).toBeTruthy();
     });
   });
 });

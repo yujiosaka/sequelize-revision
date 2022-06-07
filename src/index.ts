@@ -9,7 +9,7 @@ import {
   snakeCase,
 } from "lodash";
 import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
-import { ModelDefined } from "sequelize/types/model";
+import { ModelDefined, ModelStatic } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
 import {
@@ -21,9 +21,6 @@ import {
 import { Options, defaultOptions } from "./options";
 
 export class SequelizeRevision {
-  Revision: ModelDefined<any, any>;
-  RevisionChange?: ModelDefined<any, any>;
-
   private options: Options;
   private ns?: Namespace;
   private documentIdAttribute = "documentId";
@@ -51,7 +48,12 @@ export class SequelizeRevision {
     if (this.sequelize.getDialect() !== "mssql") {
       this.useJsonDataType = true;
     }
+  }
 
+  public defineModels<T extends Model = Model, U extends Model = Model>(): {
+    Revision: ModelStatic<T>;
+    RevisionChange?: ModelStatic<U>;
+  } {
     const revisionAttributes: ModelAttributes = {
       model: {
         type: DataTypes.STRING,
@@ -82,7 +84,7 @@ export class SequelizeRevision {
 
     debugConsole("attributes", revisionAttributes);
 
-    this.Revision = this.sequelize.define(
+    const Revision = this.sequelize.define<T>(
       this.options.revisionModel,
       revisionAttributes,
       {
@@ -98,7 +100,7 @@ export class SequelizeRevision {
     );
 
     if (this.options.userModel) {
-      this.Revision.belongsTo(this.sequelize.model(this.options.userModel), {
+      Revision.belongsTo(this.sequelize.model(this.options.userModel), {
         foreignKey: this.options.userIdAttribute,
         ...this.options.belongsToUserOptions,
       });
@@ -132,7 +134,7 @@ export class SequelizeRevision {
         };
       }
 
-      this.RevisionChange = this.sequelize.define(
+      const RevisionChange = this.sequelize.define<U>(
         this.options.revisionChangeModel,
         revisionChangeAttributes,
         {
@@ -147,34 +149,18 @@ export class SequelizeRevision {
         }
       );
 
-      this.Revision.hasMany(this.RevisionChange, {
+      Revision.hasMany(RevisionChange, {
         foreignKey: this.options.revisionIdAttribute,
         constraints: false,
       });
 
-      this.RevisionChange.belongsTo(this.Revision, {
+      RevisionChange.belongsTo(Revision, {
         foreignKey: this.options.revisionIdAttribute,
       });
+
+      return { Revision, RevisionChange };
     }
-  }
-
-  public async defineModels(): Promise<{
-    Revision: ModelDefined<any, any>;
-    RevisionChange?: ModelDefined<any, any>;
-  }> {
-    if (this.options.enableMigration) {
-      await this.Revision.sync();
-    }
-
-    if (this.RevisionChange) {
-      if (this.options.enableMigration) {
-        await this.RevisionChange.sync();
-      }
-
-      return { Revision: this.Revision, RevisionChange: this.RevisionChange };
-    }
-
-    return { Revision: this.Revision };
+    return { Revision };
   }
 
   public async trackRevision(

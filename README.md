@@ -42,7 +42,7 @@ then adding Sequelize Revision is as easy as:
 import { SequelizeRevision } from "sequelize-revision";
 
 const sequelizeRevision = new SequelizeRevision(sequelize, options);
-const { Revision, RevisionChanges } = await sequelizeRevision.defineModels();
+const { Revision, RevisionChanges } = sequelizeRevision.defineModels();
 ```
 
 which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revisions` and `RevisionChanges` models.
@@ -52,7 +52,7 @@ which loads the Sequelize Revision library, and the `defineModels()` method sets
 Then for each model that you want to keep a paper trail you simply add:
 
 ```typescript
-await sequelizeRevision.trackRevision(Model);
+sequelizeRevision.trackRevision(Model);
 ```
 
 ## Example
@@ -63,18 +63,14 @@ import { SequelizeRevision } from "sequelize-revision";
 
 const sequelize = new Sequelize("database", "username", "password");
 const sequelizeRevision = new SequelizeRevision(sequelize, options || {});
-const { Revision, RevisionChanges } = await sequelizeRevision.defineModels();
+const { Revision, RevisionChanges } = sequelizeRevision.defineModels();
 
 const User = sequelize.define("User", {
   username: Sequelize.STRING,
   birthday: Sequelize.DATE
 });
 
-// You can access to Revision and RevisionChanges via the instance before executing defineModels() function.
-sequelizeRevision.Revision;
-sequelizeRevision.RevisionChanges
-
-const { Revision, RevisionChanges } = await sequelizeRevision.trackRevision(User);
+const { Revision, RevisionChanges } = sequelizeRevision.trackRevision(User);
 ```
 
 ## Options
