@@ -1,20 +1,10 @@
 import { diff } from "deep-diff";
-import { forEach, snakeCase } from "lodash";
 import debug from "debug";
 
 const console = debug("sequelize-revision:console");
 
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-export function snakeCaseValues(obj: { [key: string]: string }): {
-  [key: string]: string;
-} {
-  forEach(obj, (val, key) => {
-    obj[key] = snakeCase(val);
-  });
-  return obj;
 }
 
 export function calcDelta(

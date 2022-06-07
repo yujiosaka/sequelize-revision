@@ -566,7 +566,6 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         continuationNamespace: "ns2",
         userModel: "User",
-        userModelAttribute: "user_id",
         underscored: true,
         underscoredAttributes: true,
       });

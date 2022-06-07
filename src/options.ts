@@ -3,16 +3,13 @@ import { BelongsToOptions } from "sequelize";
 export interface Options {
   exclude: string[];
   revisionAttribute: string;
+  revisionIdAttribute: string;
   revisionModel: string;
   revisionChangeModel: string;
   enableRevisionChangeModel: boolean;
   UUID: boolean;
   underscored: boolean;
   underscoredAttributes: boolean;
-  defaultAttributes: {
-    documentId: string;
-    revisionId: string;
-  };
   userModel?: string;
   userModelAttribute: string;
   enableCompression: boolean;
@@ -39,16 +36,13 @@ export const defaultOptions = {
     "revision",
   ],
   revisionAttribute: "revision",
+  revisionIdAttribute: "revisionId",
   revisionModel: "Revision",
   revisionChangeModel: "RevisionChange",
   enableRevisionChangeModel: false,
   UUID: false,
   underscored: false,
   underscoredAttributes: false,
-  defaultAttributes: {
-    documentId: "documentId",
-    revisionId: "revisionId",
-  },
   userModel: undefined,
   userModelAttribute: "userId",
   enableCompression: false,

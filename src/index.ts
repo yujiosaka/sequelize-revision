@@ -1,11 +1,19 @@
-import { forEach, map, filter, keys, omit, omitBy, pickBy } from "lodash";
+import {
+  forEach,
+  map,
+  filter,
+  keys,
+  omit,
+  omitBy,
+  pickBy,
+  snakeCase,
+} from "lodash";
 import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
 import { ModelDefined } from "sequelize/types/model";
 import { createNamespace, getNamespace, Namespace } from "cls-hooked";
 import * as jsdiff from "diff";
 import {
   capitalizeFirstLetter,
-  snakeCaseValues,
   calcDelta,
   diffToString,
   debugConsole,
@@ -17,23 +25,33 @@ export class SequelizeRevision {
   RevisionChange?: ModelDefined<any, any>;
 
   private options: Options;
-  private useJsonDataType: boolean;
   private ns?: Namespace;
+  private documentIdAttribute = "documentId";
+  private useJsonDataType = false;
   private failHard = false;
 
   constructor(private sequelize: Sequelize, options?: Partial<Options>) {
     this.options = { ...defaultOptions, ...options };
-    if (this.options.underscoredAttributes) {
-      snakeCaseValues(this.options.defaultAttributes);
-    }
-
-    this.useJsonDataType = this.sequelize.getDialect() !== "mssql";
 
     if (this.options.continuationNamespace) {
       this.ns = getNamespace(this.options.continuationNamespace);
       if (!this.ns) {
         this.ns = createNamespace(this.options.continuationNamespace);
       }
+    }
+
+    if (this.options.underscoredAttributes) {
+      this.documentIdAttribute = snakeCase(this.documentIdAttribute);
+      this.options.revisionIdAttribute = snakeCase(
+        this.options.revisionIdAttribute
+      );
+      this.options.userModelAttribute = snakeCase(
+        this.options.userModelAttribute
+      );
+    }
+
+    if (this.sequelize.getDialect() !== "mssql") {
+      this.useJsonDataType = true;
     }
 
     const revisionAttributes: ModelAttributes = {
@@ -45,7 +63,7 @@ export class SequelizeRevision {
         type: this.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
-      [this.options.defaultAttributes.documentId]: {
+      [this.documentIdAttribute]: {
         type: this.options.UUID ? DataTypes.UUID : DataTypes.INTEGER,
         allowNull: false,
       },
@@ -132,12 +150,12 @@ export class SequelizeRevision {
       );
 
       this.Revision.hasMany(this.RevisionChange, {
-        foreignKey: this.options.defaultAttributes.revisionId,
+        foreignKey: this.options.revisionIdAttribute,
         constraints: false,
       });
 
       this.RevisionChange.belongsTo(this.Revision, {
-        foreignKey: this.options.defaultAttributes.revisionId,
+        foreignKey: this.options.revisionIdAttribute,
       });
     }
   }
@@ -224,7 +242,7 @@ export class SequelizeRevision {
     model.addHook("afterUpsert", this.createAfterHook("upsert", modelExclude));
 
     model.hasMany(this.sequelize.models[this.options.revisionModel], {
-      foreignKey: this.options.defaultAttributes.documentId,
+      foreignKey: this.documentIdAttribute,
       constraints: false,
       scope: {
         model: model.name,
@@ -464,7 +482,7 @@ export class SequelizeRevision {
         query[this.options.userModelAttribute] =
           (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
 
-        query[this.options.defaultAttributes.documentId] = instance.id;
+        query[this.documentIdAttribute] = instance.id;
 
         const revision: any = Revision.build(query);
 

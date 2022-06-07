@@ -1,6 +1,5 @@
 import {
   capitalizeFirstLetter,
-  snakeCaseValues,
   calcDelta,
   debugConsole,
   diffToString,
@@ -25,52 +24,6 @@ describe("capitalizeFirstLetter", () => {
   it("capitalizes string starting with capitalized character", () => {
     const res = capitalizeFirstLetter("Revision");
     expect(res).toBe("Revision");
-  });
-});
-
-describe("snakeCaseValues", () => {
-  it("converts camel cases to snake cases", () => {
-    const res = snakeCaseValues({
-      documentId: "documentId",
-      revisionId: "revisionId",
-    });
-    expect(res).toEqual({
-      documentId: "document_id",
-      revisionId: "revision_id",
-    });
-  });
-
-  it("keeps snake cases", () => {
-    const res = snakeCaseValues({
-      documentId: "document_id",
-      revisionId: "revision_id",
-    });
-    expect(res).toEqual({
-      documentId: "document_id",
-      revisionId: "revision_id",
-    });
-  });
-
-  it("converts capitalized camel cases to snake cases", () => {
-    const res = snakeCaseValues({
-      documentId: "DocumentId",
-      revisionId: "RevisionId",
-    });
-    expect(res).toEqual({
-      documentId: "document_id",
-      revisionId: "revision_id",
-    });
-  });
-
-  it("converts screaming camel case to snake cases", () => {
-    const res = snakeCaseValues({
-      documentId: "DOCUMENT_ID",
-      revisionId: "REVISION_ID",
-    });
-    expect(res).toEqual({
-      documentId: "document_id",
-      revisionId: "revision_id",
-    });
   });
 });
 
