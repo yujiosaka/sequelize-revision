@@ -83,6 +83,13 @@ export class SequelizeRevision {
       }
     );
 
+    if (this.options.userModel) {
+      this.Revision.belongsTo(this.sequelize.model(this.options.userModel), {
+        foreignKey: this.options.userModelAttribute,
+        ...this.options.belongsToUserOptions,
+      });
+    }
+
     if (this.options.enableRevisionChangeModel) {
       // Attributes for RevisionChangeModel
       const revisionChangeAttributes: ModelAttributes = {
@@ -126,26 +133,7 @@ export class SequelizeRevision {
           tableName: this.options.changeTableName,
         }
       );
-    }
-  }
 
-  // Return defineModels()
-  public async defineModels(): Promise<{
-    Revision: ModelDefined<any, any>;
-    RevisionChange?: ModelDefined<any, any>;
-  }> {
-    if (this.options.userModel) {
-      this.Revision.belongsTo(this.sequelize.model(this.options.userModel), {
-        foreignKey: this.options.userModelAttribute,
-        ...this.options.belongsToUserOptions,
-      });
-    }
-
-    if (this.options.enableMigration) {
-      await this.Revision.sync();
-    }
-
-    if (this.RevisionChange) {
       // Set associations
       this.Revision.hasMany(this.RevisionChange, {
         foreignKey: this.options.defaultAttributes.revisionId,
@@ -155,7 +143,19 @@ export class SequelizeRevision {
       this.RevisionChange.belongsTo(this.Revision, {
         foreignKey: this.options.defaultAttributes.revisionId,
       });
+    }
+  }
 
+  // Return defineModels()
+  public async defineModels(): Promise<{
+    Revision: ModelDefined<any, any>;
+    RevisionChange?: ModelDefined<any, any>;
+  }> {
+    if (this.options.enableMigration) {
+      await this.Revision.sync();
+    }
+
+    if (this.RevisionChange) {
       if (this.options.enableMigration) {
         await this.RevisionChange.sync();
       }
