@@ -70,11 +70,11 @@ const User = sequelize.define("User", {
   birthday: Sequelize.DATE
 });
 
-const { Revision, RevisionChanges } = await sequelizeRevision.trackRevision(User);
-
-// You can also access to Revision and RevisionChanges via the instance after executing defineModels() function.
+// You can access to Revision and RevisionChanges via the instance before executing defineModels() function.
 sequelizeRevision.Revision;
 sequelizeRevision.RevisionChanges
+
+const { Revision, RevisionChanges } = await sequelizeRevision.trackRevision(User);
 ```
 
 ## Options
