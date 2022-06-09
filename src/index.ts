@@ -355,16 +355,11 @@ export class SequelizeRevision {
   ): { previousVersion: any; currentVersion: any } {
     const destroyOperation = operation === "destroy";
 
-    let previousVersion: any = {};
-    let currentVersion: any = {};
+    let previousVersion = instance._previousDataValues;
+    let currentVersion = instance.dataValues;
     if (!destroyOperation && this.options.enableCompression) {
-      forEach(opt.defaultFields, (a) => {
-        previousVersion[a] = instance._previousDataValues[a];
-        currentVersion[a] = instance.dataValues[a];
-      });
-    } else {
-      previousVersion = instance._previousDataValues;
-      currentVersion = instance.dataValues;
+      previousVersion = pick(instance._previousDataValues, opt.defaultFields);
+      currentVersion = pick(instance.dataValues, opt.defaultFields);
     }
 
     // Supported nested models.

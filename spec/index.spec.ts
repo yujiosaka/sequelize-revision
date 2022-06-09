@@ -964,6 +964,37 @@ describe("SequelizeRevision", () => {
     });
   });
 
+  describe("logging revisions with compression", () => {
+    beforeEach(async () => {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
+        enableMigration: true,
+        enableCompression: true,
+      });
+      ({ Revision } = sequelizeRevision.defineModels());
+
+      await Revision.sync();
+      await sequelizeRevision.trackRevision(Project);
+    });
+
+    it("logs revisions with compressed document when updating a project", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-revision",
+          version: 1,
+        },
+        { noRevision: true }
+      );
+      await project.update({ version: 2 });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].document).toEqual({
+        version: 2,
+      });
+    });
+  });
+
   describe("using underscored table names and attributes", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
