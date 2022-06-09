@@ -10,9 +10,10 @@ export class Project extends Model<
   InferCreationAttributes<Project>
 > {
   declare id: CreationOptional<number>;
-  declare name?: string;
-  declare version?: string | number;
-  declare revision?: number;
+  declare name?: string | null;
+  declare version?: string | number | null;
+  declare revision?: number | null;
+  declare info?: object | null;
 }
 
 export class User extends Model<

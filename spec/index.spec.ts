@@ -27,6 +27,9 @@ describe("SequelizeRevision", () => {
         version: {
           type: DataTypes.BIGINT,
         },
+        info: {
+          type: DataTypes.JSON,
+        },
         revision: {
           type: DataTypes.INTEGER,
         },
@@ -353,7 +356,7 @@ describe("SequelizeRevision", () => {
 
       expect(revisionChanges[0].path).toBe("name");
       expect(revisionChanges[0].document).toEqual({
-        kind: "E",
+        kind: "N",
         path: ["name"],
         rhs: "sequelize-revision",
       });
@@ -364,7 +367,7 @@ describe("SequelizeRevision", () => {
 
       expect(revisionChanges[1].path).toBe("version");
       expect(revisionChanges[1].document).toEqual({
-        kind: "E",
+        kind: "N",
         path: ["version"],
         rhs: 1,
       });
@@ -494,6 +497,122 @@ describe("SequelizeRevision", () => {
 
       const revisionChanges = await RevisionChange.findAll();
       expect(revisionChanges.length).toBe(0);
+    });
+  });
+
+  describe("logging revisions for JSON attributes", () => {
+    beforeEach(async () => {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
+        enableMigration: true,
+        enableRevisionChangeModel: true,
+      });
+      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+      await Revision.sync();
+      await RevisionChange.sync();
+      await sequelizeRevision.trackRevision(Project);
+    });
+
+    it("logs revisions when creating a project with a JSON attribute", async () => {
+      await Project.create({
+        name: "sequelize-revision",
+        info: { language: "typescript" },
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-revision",
+        info: { language: "typescript" },
+      });
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(2);
+
+      expect(revisionChanges[1].path).toBe("info");
+      expect(revisionChanges[1].document).toEqual({
+        kind: "N",
+        path: ["info"],
+        rhs: { language: "typescript" },
+      });
+    });
+
+    it("does not log revisions when updating a project with the same JSON attribute", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-revision",
+          info: { language: "typescript" },
+        },
+        { noRevision: true }
+      );
+      await project.update({
+        name: "sequelize-revision",
+        info: { language: "typescript" },
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(0);
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(0);
+    });
+
+    it("logs revisions when updating a JSON attribute", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-revision",
+          info: { language: "javascript" },
+        },
+        { noRevision: true }
+      );
+
+      await project.update({ info: { language: "typescript" } });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(1);
+
+      expect(revisionChanges[0].path).toBe("info");
+      expect(revisionChanges[0].document).toEqual({
+        kind: "E",
+        path: ["info", "language"],
+        lhs: "javascript",
+        rhs: "typescript",
+      });
+    });
+
+    it("does not log revisionChanges when deleting a JSON attribute", async () => {
+      const project = await Project.create(
+        {
+          name: "sequelize-revision",
+          info: { language: "typescript" },
+        },
+        { noRevision: true }
+      );
+
+      await project.update({
+        info: null,
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].document).toEqual({
+        name: "sequelize-revision",
+        info: null,
+      });
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(1);
+
+      expect(revisionChanges[0].document).toEqual({
+        kind: "E",
+        path: ["info"],
+        lhs: { language: "typescript" },
+        rhs: null,
+      });
     });
   });
 

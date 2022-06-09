@@ -5,7 +5,9 @@ import {
   keys,
   omit,
   omitBy,
+  pick,
   pickBy,
+  isUndefined,
   snakeCase,
 } from "lodash";
 import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
@@ -366,17 +368,13 @@ export class SequelizeRevision {
     }
 
     // Supported nested models.
-    previousVersion = omitBy(
-      previousVersion,
-      (i) => i != null && typeof i === "object" && !(i instanceof Date)
-    );
+    previousVersion = pick(previousVersion, keys(instance.rawAttributes));
     previousVersion = omit(previousVersion, exclude);
+    previousVersion = omitBy(previousVersion, isUndefined);
 
-    currentVersion = omitBy(
-      currentVersion,
-      (i) => i != null && typeof i === "object" && !(i instanceof Date)
-    );
+    currentVersion = pick(currentVersion, keys(instance.rawAttributes));
     currentVersion = omit(currentVersion, exclude);
+    currentVersion = omitBy(currentVersion, isUndefined);
 
     return { previousVersion, currentVersion };
   }
