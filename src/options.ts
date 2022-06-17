@@ -24,7 +24,7 @@ export interface Options {
   belongsToUserOptions?: BelongsToOptions;
 }
 
-export const defaultOptions = {
+export const defaultOptions: Options = {
   exclude: [
     "id",
     "createdAt",
