@@ -42,7 +42,7 @@ then adding Sequelize Revision is as easy as:
 import { SequelizeRevision } from "sequelize-revision";
 
 const sequelizeRevision = new SequelizeRevision(sequelize, options);
-const { Revision, RevisionChanges } = sequelizeRevision.defineModels();
+const [Revision, RevisionChanges] = sequelizeRevision.defineModels();
 ```
 
 which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revision` and `RevisionChange` models.
@@ -63,7 +63,7 @@ import { SequelizeRevision } from "sequelize-revision";
 
 const sequelize = new Sequelize("sqlite::memory:");
 const sequelizeRevision = new SequelizeRevision(sequelize, options);
-const { Revision, RevisionChanges } = sequelizeRevision.defineModels();
+const [Revision, RevisionChanges] = sequelizeRevision.defineModels();
 
 const User = sequelize.define("User", { name: Sequelize.STRING });
 sequelizeRevision.trackRevision(User);

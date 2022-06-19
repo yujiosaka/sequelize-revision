@@ -57,11 +57,8 @@ export class SequelizeRevision<O extends Partial<Options>> {
   }
 
   public defineModels(): O["enableRevisionChangeModel"] extends true
-    ? {
-        Revision: ModelStatic<Revision<O>>;
-        RevisionChange: ModelStatic<RevisionChange<O>>;
-      }
-    : { Revision: ModelStatic<Revision<O>> } {
+    ? [ModelStatic<Revision<O>>, ModelStatic<RevisionChange<O>>]
+    : [ModelStatic<Revision<O>>] {
     const Revision = this.sequelize.define<Revision<O>>(
       this.options.revisionModel,
       this.getRevisionAttributes(),
@@ -101,9 +98,9 @@ export class SequelizeRevision<O extends Partial<Options>> {
         foreignKey: this.options.revisionIdAttribute,
       });
 
-      return { Revision, RevisionChange } as any;
+      return [Revision, RevisionChange] as any;
     }
-    return { Revision } as any;
+    return [Revision] as any;
   }
 
   public async trackRevision(

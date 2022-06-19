@@ -42,7 +42,7 @@ sequelizePaperTrail.defineModels(db);
 const { Revision, RevisionChange } = db;
 
 // To:
-const { Revision, RevisionChange } = sequelizeRevision.defineModels();
+const [Revision, RevisionChange] = sequelizeRevision.defineModels();
 ```
 
 3. Finally, change the way to track revisions on your models.
@@ -62,7 +62,7 @@ Executing `defineModels` function does not trigger table creation migrations.
 Call each model"s [sync](https://sequelize.org/api/v6/class/src/model.js~model#static-method-sync) function to order to create tables for `Revision` and `RevisionChange` respectively.
 
 ```typescript
-const { Revision, RevisionChange } = sequelizeRevision.defineModels();
+const [Revision, RevisionChange] = sequelizeRevision.defineModels();
 
 await Revision.sync();
 await RevisionChange.sync();
@@ -151,7 +151,7 @@ You can pass `exclude` option to the constructor in order to exclude attributes 
 
 ```typescript
 const sequelizeRevision = new SequelizeRevision(sequelize, { exclude: ["version"] });
-sequelizeRevision.defineModels();
+const [Revision, RevisionChange] = sequelizeRevision.defineModels();
 ```
 
 If you want to exclude attributes specific to eacy model, you can pass `exclude` parameters to the `trackRevision` function.

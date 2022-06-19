@@ -62,7 +62,7 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -235,7 +235,7 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -325,7 +325,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+      [Revision, RevisionChange] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await RevisionChange.sync();
@@ -506,7 +506,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+      [Revision, RevisionChange] = sequelizeRevision.defineModels();
       await Revision.sync();
       await RevisionChange.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -625,7 +625,7 @@ describe("SequelizeRevision", () => {
         continuationNamespace: "ns1",
         userModel: "User",
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -693,7 +693,7 @@ describe("SequelizeRevision", () => {
         underscored: true,
         underscoredAttributes: true,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -773,7 +773,7 @@ describe("SequelizeRevision", () => {
         metaDataFields: { userRole: false, server: false },
       });
 
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       Revision.rawAttributes["userRole"] = {
         type: DataTypes.STRING,
@@ -890,7 +890,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         exclude,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -916,7 +916,7 @@ describe("SequelizeRevision", () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
         enableMigration: true,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project, { exclude: ["version"] });
@@ -943,7 +943,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableStrictDiff: false,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -970,7 +970,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableCompression: true,
       });
-      ({ Revision } = sequelizeRevision.defineModels());
+      [Revision] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await sequelizeRevision.trackRevision(Project);
@@ -1005,7 +1005,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+      [Revision, RevisionChange] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await RevisionChange.sync();
@@ -1054,7 +1054,7 @@ describe("SequelizeRevision", () => {
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
-      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+      [Revision, RevisionChange] = sequelizeRevision.defineModels();
 
       await Revision.sync();
       await RevisionChange.sync();
