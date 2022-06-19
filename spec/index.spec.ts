@@ -1062,7 +1062,7 @@ describe("SequelizeRevision", () => {
     });
 
     it("has json data type in revisions", async () => {
-      const project = await Project.create({
+      await Project.create({
         name: "sequelize-revision",
       });
 
