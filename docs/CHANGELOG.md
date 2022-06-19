@@ -1,3 +1,10 @@
+## [5.2.1](https://github.com/yujiosaka/sequelize-revision/compare/v5.2.0...v5.2.1) (2022-06-09)
+
+
+### Bug Fixes
+
+* track json attributes ([d22cd54](https://github.com/yujiosaka/sequelize-revision/commit/d22cd545cfcbea0889b8f84e311cd2d26d5e3a39))
+
 # [5.2.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.1.0...v5.2.0) (2022-06-07)
 
 
