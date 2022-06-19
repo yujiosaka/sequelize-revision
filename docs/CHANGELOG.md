@@ -1,3 +1,24 @@
+# [6.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.2.1...v6.0.0) (2022-06-19)
+
+
+### Bug Fixes
+
+* change return type of `defineModels` into tuple ([13417a2](https://github.com/yujiosaka/sequelize-revision/commit/13417a2da7f95952a6581a7c0ff5266eba2dc9f5))
+
+
+### Features
+
+* define `SequelizeRevisionOptions` type ([8c89fc3](https://github.com/yujiosaka/sequelize-revision/commit/8c89fc3761eca9795bda44559426f9c1e521845b))
+* infer meta data attributes from options ([a553817](https://github.com/yujiosaka/sequelize-revision/commit/a553817bb2e41dd6ca716153b2d6127463e13204))
+* infer model types from options ([b5c9f49](https://github.com/yujiosaka/sequelize-revision/commit/b5c9f494cff29a19907344b0e68002f529d3d50b))
+* re-export types from main file ([7e4372f](https://github.com/yujiosaka/sequelize-revision/commit/7e4372f483c75e43b610738a4d9ba035b8648498))
+* support `useJsonDataType` option ([b2f6966](https://github.com/yujiosaka/sequelize-revision/commit/b2f6966626e42ed9358cd65dcc838e129538328d))
+
+
+### BREAKING CHANGES
+
+* `defineModels` no longer returns object type.
+
 ## [5.2.1](https://github.com/yujiosaka/sequelize-revision/compare/v5.2.0...v5.2.1) (2022-06-09)
 
 
