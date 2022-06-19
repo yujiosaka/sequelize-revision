@@ -525,3 +525,5 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     return o || n ? diffChars(o, n) : [];
   }
 }
+
+export type { Revision, RevisionChange, SequelizeRevisionOptions };
