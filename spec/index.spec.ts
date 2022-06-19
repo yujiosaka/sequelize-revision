@@ -342,7 +342,7 @@ describe("SequelizeRevision", () => {
       expect(revisionChanges.length).toBe(0);
     });
 
-    it("logs revisionChanges when creating a project", async () => {
+    it("logs revision changes when creating a project", async () => {
       await Project.create({
         name: "sequelize-revision",
         version: 1,
@@ -405,7 +405,7 @@ describe("SequelizeRevision", () => {
       expect(revisionChanges.length).toBe(0);
     });
 
-    it("logs revisionChanges when updating a project", async () => {
+    it("logs revision changes when updating a project", async () => {
       const project = await Project.create(
         {
           name: "sequelize-paper-trail",
@@ -441,7 +441,7 @@ describe("SequelizeRevision", () => {
       expect(revisionChanges[1].revisionId).toBe(revisions[1].id);
     });
 
-    it("logs revisionChanges when updating a project in different types", async () => {
+    it("logs revision changes when updating a project in different types", async () => {
       const project = await Project.create(
         {
           name: "sequelize-revision",
@@ -1044,6 +1044,48 @@ describe("SequelizeRevision", () => {
       expect(revisionChanges[0].revision_id).toBe(revisions[0].id);
       expect(revisionChanges[0].created_at).toBeTruthy();
       expect(revisionChanges[0].updated_at).toBeTruthy();
+    });
+  });
+
+  describe("logging revisions without json data type", () => {
+    beforeEach(async () => {
+      const sequelizeRevision = new SequelizeRevision(sequelize, {
+        useJsonDataType: false,
+        enableMigration: true,
+        enableRevisionChangeModel: true,
+      });
+      ({ Revision, RevisionChange } = sequelizeRevision.defineModels());
+
+      await Revision.sync();
+      await RevisionChange.sync();
+      await sequelizeRevision.trackRevision(Project);
+    });
+
+    it("has json data type in revisions", async () => {
+      const project = await Project.create({
+        name: "sequelize-revision",
+      });
+
+      const revisions = await Revision.findAll();
+      expect(revisions.length).toBe(1);
+
+      expect(revisions[0].document).toBe('{"name":"sequelize-revision"}');
+    });
+
+    it("has json data type in revision changes", async () => {
+      await Project.create({
+        name: "sequelize-revision",
+      });
+
+      const revisionChanges = await RevisionChange.findAll();
+      expect(revisionChanges.length).toBe(1);
+
+      expect(revisionChanges[0].document).toBe(
+        '{"kind":"N","path":["name"],"rhs":"sequelize-revision"}'
+      );
+      expect(revisionChanges[0].diff).toBe(
+        '[{"count":18,"added":true,"value":"sequelize-revision"}]'
+      );
     });
   });
 });

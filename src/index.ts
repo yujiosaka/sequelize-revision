@@ -28,7 +28,6 @@ export class SequelizeRevision {
   private documentIdAttribute = "documentId";
   private createdAtAttribute = "createdAt";
   private updatedAtAttribute = "updatedAt";
-  private useJsonDataType = false;
   private failHard = false;
 
   constructor(private sequelize: Sequelize, options?: Partial<Options>) {
@@ -49,10 +48,6 @@ export class SequelizeRevision {
       this.options.revisionIdAttribute = snakeCase(
         this.options.revisionIdAttribute
       );
-    }
-
-    if (this.sequelize.getDialect() !== "mssql") {
-      this.useJsonDataType = true;
     }
   }
 
@@ -164,7 +159,9 @@ export class SequelizeRevision {
         allowNull: false,
       },
       document: {
-        type: this.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType
+          ? DataTypes.JSON
+          : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       [this.documentIdAttribute]: {
@@ -198,11 +195,15 @@ export class SequelizeRevision {
         allowNull: false,
       },
       document: {
-        type: this.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType
+          ? DataTypes.JSON
+          : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       diff: {
-        type: this.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType
+          ? DataTypes.JSON
+          : DataTypes.TEXT("medium"),
         allowNull: false,
       },
     };
@@ -408,7 +409,7 @@ export class SequelizeRevision {
         this.checkContinuationKey();
 
         let document = currentVersion;
-        if (!this.useJsonDataType) {
+        if (!this.options.useJsonDataType) {
           document = JSON.stringify(document);
         }
 
@@ -461,16 +462,17 @@ export class SequelizeRevision {
               this.options.revisionChangeModel
             );
             await Promise.all(
-              map(instance.context.delta, async (document) => {
-                let diff = this.calcDiff(document);
+              map(instance.context.delta, async (difference) => {
+                let document = difference;
+                let diff = this.calcDiff(difference);
 
-                if (!this.useJsonDataType) {
-                  document = JSON.stringify(document);
+                if (!this.options.useJsonDataType) {
+                  document = JSON.stringify(difference);
                   diff = JSON.stringify(diff);
                 }
 
                 const revisionChange = RevisionChange.build({
-                  path: document.path[0],
+                  path: difference.path[0],
                   document,
                   diff,
                   revisionId: savedRevision.id,

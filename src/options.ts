@@ -22,6 +22,7 @@ export interface Options {
   tableName?: string;
   changeTableName?: string;
   belongsToUserOptions?: BelongsToOptions;
+  useJsonDataType: boolean;
 }
 
 export const defaultOptions: Options = {
@@ -55,4 +56,5 @@ export const defaultOptions: Options = {
   tableName: undefined,
   changeTableName: undefined,
   belongsToUserOptions: undefined,
+  useJsonDataType: true,
 };
