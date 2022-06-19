@@ -1,5 +1,5 @@
-import {
-  Model,
+import { Model } from "sequelize";
+import type {
   InferAttributes,
   InferCreationAttributes,
   CreationOptional,

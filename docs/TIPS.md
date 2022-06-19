@@ -1,7 +1,6 @@
 # TIPS
 
 - [Migrate from Sequelize Paper Trail](#migrate-from-sequelize-paper-trail)
-- [Define model types](#define-model-types)
 - [Create model tables](#create-model-tables)
 - [Enable debug logging](#enable-debug-logging)
 - [User tracking](#user-tracking)
@@ -54,50 +53,6 @@ Model.hasPaperTrail();
 
 // To:
 sequelizeRevision.trackRevision(Model);
-```
-
-## Define model types
-
-Due to the dynamic nature of [Sequelize](https://github.com/sequelize/sequelize), you have to define the types of `Revision` and `RevisionChnage` models in your application.
-
-Here is the type definitions for the default attribute names.
-
-```typescript
-import { ForeignKey, NonAttribute } from "sequelize";
-import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from "sequelize";
-
-interface Revision
-  extends Model<
-    InferAttributes<Revision>,
-    InferCreationAttributes<Revision>
-  > {
-  id: CreationOptional<number>;
-  model: string;
-  document: object;
-  documentId: number;
-  operation: string;
-  revision: number;
-  revisionChanges: NonAttribute<RevisionChange[]>;
-  createdAt: CreationOptional<Date>;
-  updatedAt: CreationOptional<Date>;
-}
-
-interface RevisionChange
-  extends Model<
-    InferAttributes<RevisionChange>,
-    InferCreationAttributes<RevisionChange>
-  > {
-  id: CreationOptional<number>;
-  path: string;
-  document: object;
-  diff: object;
-  revisionId: ForeignKey<Revision["id"]>;
-  revision: NonAttribute<Revision>;
-  createdAt: CreationOptional<Date>;
-  updatedAt: CreationOptional<Date>;
-}
-
-const { Revision, RevisionChange } = sequelizeRevision.defineModels<Revision, RevisionChange>();
 ```
 
 ## Create model tables

@@ -1,4 +1,4 @@
-import { BelongsToOptions } from "sequelize";
+import type { BelongsToOptions } from "sequelize";
 
 export interface Options {
   exclude: string[];

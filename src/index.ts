@@ -10,19 +10,24 @@ import {
   isUndefined,
   snakeCase,
 } from "lodash";
-import { Sequelize, DataTypes, Model, ModelAttributes } from "sequelize";
-import { ModelDefined, ModelStatic } from "sequelize/types/model";
-import { createNamespace, getNamespace, Namespace } from "cls-hooked";
-import * as jsdiff from "diff";
+import { Sequelize, DataTypes, Model } from "sequelize";
+import type { ModelAttributes } from "sequelize";
+import type { ModelDefined, ModelStatic } from "sequelize/types/model";
+import { createNamespace, getNamespace } from "cls-hooked";
+import type { Namespace } from "cls-hooked";
+import { diffChars } from "diff";
 import {
   capitalizeFirstLetter,
   calcDelta,
   diffToString,
   debugConsole,
 } from "./helpers";
-import { Options, defaultOptions } from "./options";
+import type { Revision, RevisionChange } from "./models";
+import { defaultOptions } from "./options";
+import type { Options } from "./options";
+import type { F } from "ts-toolbelt";
 
-export class SequelizeRevision {
+export class SequelizeRevision<O extends Partial<Options>> {
   private options: Options;
   private ns?: Namespace;
   private documentIdAttribute = "documentId";
@@ -30,8 +35,8 @@ export class SequelizeRevision {
   private updatedAtAttribute = "updatedAt";
   private failHard = false;
 
-  constructor(private sequelize: Sequelize, options?: Partial<Options>) {
-    this.options = { ...defaultOptions, ...options };
+  constructor(private sequelize: Sequelize, options?: F.Narrow<O>) {
+    this.options = Object.assign({}, defaultOptions, options);
 
     if (this.options.continuationNamespace) {
       this.ns = getNamespace(this.options.continuationNamespace);
@@ -51,11 +56,13 @@ export class SequelizeRevision {
     }
   }
 
-  public defineModels<T extends Model = Model, U extends Model = Model>(): {
-    Revision: ModelStatic<T>;
-    RevisionChange?: ModelStatic<U>;
-  } {
-    const Revision = this.sequelize.define<T>(
+  public defineModels(): O["enableRevisionChangeModel"] extends true
+    ? {
+        Revision: ModelStatic<Revision<O>>;
+        RevisionChange: ModelStatic<RevisionChange<O>>;
+      }
+    : { Revision: ModelStatic<Revision<O>> } {
+    const Revision = this.sequelize.define<Revision<O>>(
       this.options.revisionModel,
       this.getRevisionAttributes(),
       {
@@ -74,7 +81,7 @@ export class SequelizeRevision {
     }
 
     if (this.options.enableRevisionChangeModel) {
-      const RevisionChange = this.sequelize.define<U>(
+      const RevisionChange = this.sequelize.define<RevisionChange<O>>(
         this.options.revisionChangeModel,
         this.getRevisionChangeAttributes(),
         {
@@ -94,9 +101,9 @@ export class SequelizeRevision {
         foreignKey: this.options.revisionIdAttribute,
       });
 
-      return { Revision, RevisionChange };
+      return { Revision, RevisionChange } as any;
     }
-    return { Revision };
+    return { Revision } as any;
   }
 
   public async trackRevision(
@@ -518,6 +525,6 @@ export class SequelizeRevision {
   private calcDiff(document: any): any {
     const o = diffToString(document.item ? document.item.lhs : document.lhs);
     const n = diffToString(document.item ? document.item.rhs : document.rhs);
-    return o || n ? jsdiff.diffChars(o, n) : [];
+    return o || n ? diffChars(o, n) : [];
   }
 }
