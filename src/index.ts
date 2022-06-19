@@ -24,10 +24,10 @@ import {
 } from "./helpers";
 import type { Revision, RevisionChange } from "./models";
 import { defaultOptions } from "./options";
-import type { Options } from "./options";
+import type { Options, SequelizeRevisionOptions } from "./options";
 import type { F } from "ts-toolbelt";
 
-export class SequelizeRevision<O extends Partial<Options>> {
+export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   private options: Options;
   private ns?: Namespace;
   private documentIdAttribute = "documentId";

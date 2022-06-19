@@ -25,6 +25,8 @@ export interface Options {
   useJsonDataType: boolean;
 }
 
+export type SequelizeRevisionOptions = Partial<Options>;
+
 export const defaultOptions: Options = {
   exclude: [
     "id",

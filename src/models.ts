@@ -1,8 +1,8 @@
 import type { Model, Optional } from "sequelize";
-import type { Options } from "./options";
+import type { SequelizeRevisionOptions } from "./options";
 import type { CamelToSnakeCase } from "./util-types";
 
-type TimestampAttributes<O extends Partial<Options>> = {
+type TimestampAttributes<O extends SequelizeRevisionOptions> = {
   [CreatedAt in O["underscoredAttributes"] extends true
     ? CamelToSnakeCase<"createdAt">
     : "createdAt"]: Date;
@@ -12,7 +12,7 @@ type TimestampAttributes<O extends Partial<Options>> = {
     : "updatedAt"]: Date;
 };
 
-type RevisionAttributes<O extends Partial<Options>> = {
+type RevisionAttributes<O extends SequelizeRevisionOptions> = {
   id: O["UUID"] extends true ? string : number;
   model: string;
   document: O["useJsonDataType"] extends true ? object : string;
@@ -37,18 +37,18 @@ type RevisionAttributes<O extends Partial<Options>> = {
     : never]: O["UUID"] extends true ? string : number;
 } & TimestampAttributes<O>;
 
-type RevisionCreationAttributes<O extends Partial<Options>> = Optional<
+type RevisionCreationAttributes<O extends SequelizeRevisionOptions> = Optional<
   RevisionAttributes<O>,
   "id"
 >;
 
-export type Revision<O extends Partial<Options>> = Model<
+export type Revision<O extends SequelizeRevisionOptions> = Model<
   RevisionAttributes<O>,
   RevisionCreationAttributes<O>
 > &
   RevisionAttributes<O>;
 
-type RevisionChangeAttributes<O extends Partial<Options>> = {
+type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
   id: O["UUID"] extends true ? string : number;
   path: string;
   document: O["useJsonDataType"] extends true ? object : string;
@@ -63,12 +63,10 @@ type RevisionChangeAttributes<O extends Partial<Options>> = {
     : "revisionId"]: O["UUID"] extends true ? string : number;
 } & TimestampAttributes<O>;
 
-type RevisionChangeCreationAttributes<O extends Partial<Options>> = Optional<
-  RevisionChangeAttributes<O>,
-  "id"
->;
+type RevisionChangeCreationAttributes<O extends SequelizeRevisionOptions> =
+  Optional<RevisionChangeAttributes<O>, "id">;
 
-export type RevisionChange<O extends Partial<Options>> = Model<
+export type RevisionChange<O extends SequelizeRevisionOptions> = Model<
   RevisionChangeAttributes<O>,
   RevisionChangeCreationAttributes<O>
 > &
