@@ -12,6 +12,10 @@ type TimestampAttributes<O extends SequelizeRevisionOptions> = {
     : "updatedAt"]: Date;
 };
 
+type MetaDataAttributes<O extends SequelizeRevisionOptions> = {
+  [Field in keyof O["metaDataFields"]]: any;
+};
+
 type RevisionAttributes<O extends SequelizeRevisionOptions> = {
   id: O["UUID"] extends true ? string : number;
   model: string;
@@ -35,7 +39,8 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
       ? CamelToSnakeCase<"userId">
       : "userId"
     : never]: O["UUID"] extends true ? string : number;
-} & TimestampAttributes<O>;
+} & MetaDataAttributes<O> &
+  TimestampAttributes<O>;
 
 type RevisionCreationAttributes<O extends SequelizeRevisionOptions> = Optional<
   RevisionAttributes<O>,
