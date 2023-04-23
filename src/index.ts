@@ -449,7 +449,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         // in case of custom user models that are not 'userId'
         query[this.options.userIdAttribute] =
           (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
-        query[this.documentIdAttribute] = instance.id;
+        query[this.documentIdAttribute] = instance.id || instance.uuid;
 
         const Revision = this.sequelize.model(this.options.revisionModel);
         const revision: any = Revision.build(query);
