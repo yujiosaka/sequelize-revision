@@ -1,3 +1,10 @@
+## [7.0.3](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.2...v7.0.3) (2024-05-28)
+
+
+### Bug Fixes
+
+* stop named import of deep-diff ([c62f6a5](https://github.com/yujiosaka/sequelize-revision/commit/c62f6a5c80cd0d360ecf486c72cc37c89d5ece70))
+
 ## [7.0.2](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.1...v7.0.2) (2024-05-28)
 
 
