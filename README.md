@@ -11,14 +11,14 @@
 
 Sequelize Revision is a fork from [Sequelize Paper Trail](https://github.com/nielsgl/sequelize-paper-trail) supporting similar options and providing consistent behavior with following improvements:
 
--   Re-written in TypeScript and support type checks
--   Working well with or without [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
--   Tracking users for making changes with [cls-hooked](https://github.com/jeff-lewis/cls-hooked)
--   Support JSON data type for storing revisions
--   Exclude revision attributes for each model
--   Passing revision metadata to operations
--   Logging revisions for upsert operations
--   Better coverage in unit tests
+- Re-written in TypeScript and support type checks
+- Working well with or without [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript)
+- Tracking users for making changes with [cls-hooked](https://github.com/jeff-lewis/cls-hooked)
+- Support JSON data type for storing revisions
+- Exclude revision attributes for each model
+- Passing revision metadata to operations
+- Logging revisions for upsert operations
+- Better coverage in unit tests
 
 ## Installation
 
@@ -47,7 +47,7 @@ const [Revision, RevisionChanges] = sequelizeRevision.defineModels();
 
 which loads the Sequelize Revision library, and the `defineModels()` method sets up a `Revision` and `RevisionChange` models.
 
-*Note: If you pass `userModel` option to the constructor in order to enable user tracking, `userModel` should be setup before `defineModels()` is called.*
+_Note: If you pass `userModel` option to the constructor in order to enable user tracking, `userModel` should be setup before `defineModels()` is called._
 
 Then for each model that you want to keep a paper trail you simply add:
 
@@ -110,9 +110,9 @@ Sequelize Revision supports various options that can be passed into the initiali
 | `"model"`               | [STRING](https://sequelize.org/api/v6/class/src/data-types.js~string)                                                                                | Name of the tracked model.                                                                                                                                                                                                                                                                                       |
 | `"document"`            | [JSON](https://sequelize.org/api/v6/class/src/data-types.js~jsontype) \| [TEXT("medium")](https://sequelize.org/api/v6/class/src/data-types.js~text) | Attributes of the model after the operation. The entire attributes are saved by default, but can be compresses only to the diff by passing **[enableCompression]** option.                                                                                                                                       |
 | `"documentId"`          | [INTEGER](https://sequelize.org/api/v6/class/src/data-types.js~integer) \| [UUID](https://sequelize.org/api/v6/class/src/data-types.js~uuid)         | ID of the tracked document. Attribute name can be modified to `"document_id"` by passing **[underscoredAttributes]** option.                                                                                                                                                                                     |
-| `"operation"`           | [STRING](https://sequelize.org/api/v6/class/src/data-types.js~string)                                                                                | Name of the operation such as `"create"`, `"update"` and  `"destroy"`.                                                                                                                                                                                                                                           |
+| `"operation"`           | [STRING](https://sequelize.org/api/v6/class/src/data-types.js~string)                                                                                | Name of the operation such as `"create"`, `"update"` and `"destroy"`.                                                                                                                                                                                                                                            |
 | **[revisionAttribute]** | [INTEGER](https://sequelize.org/api/v6/class/src/data-types.js~integer)                                                                              | Version of the document starting from `1`. The value is incremented every time when the document is created, updated or deleted. Attribute name is configured by **[revisionAttribute]**, default to `"revision"`. The same value is saved to **[revisionAttribute]** attribute of the tracked document as well. |
-| **[userIdAttribute]**   | (ID data type of of the user model)                                                                                                                  | Foreign key of the user model. Attribute name is configured by **[userIdAttribute]**, default to `"userId"`  and modified to `"user_id"` by passing **[underscoredAttributes]** option.                                                                                                                          |
+| **[userIdAttribute]**   | (ID data type of of the user model)                                                                                                                  | Foreign key of the user model. Attribute name is configured by **[userIdAttribute]**, default to `"userId"` and modified to `"user_id"` by passing **[underscoredAttributes]** option.                                                                                                                           |
 
 ### RevisionChnage
 
