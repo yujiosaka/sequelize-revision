@@ -1,5 +1,4 @@
 import { createNamespace } from "cls-hooked";
-import map from "lodash.map";
 import { DataTypes, Sequelize } from "sequelize";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SequelizeRevision } from "../src/index";
@@ -618,7 +617,7 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(3);
 
-      expect(map(revisions, "userId")).toEqual([null, null, null]);
+      expect(revisions.map((revision: any) => revision.userId)).toEqual([null, null, null]);
     });
 
     it("logs revisions with userId in continuous local storage", () =>
@@ -636,7 +635,7 @@ describe("SequelizeRevision", () => {
           const revisions = await Revision.findAll();
           expect(revisions.length).toBe(3);
 
-          expect(map(revisions, "userId")).toEqual([user.id, user.id, user.id]);
+          expect(revisions.map((revision: any) => revision.userId)).toEqual([user.id, user.id, user.id]);
           done();
         });
       }));
@@ -655,7 +654,7 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(3);
 
-      expect(map(revisions, "userId")).toEqual([user.id, user.id, user.id]);
+      expect(revisions.map((revision: any) => revision.userId)).toEqual([user.id, user.id, user.id]);
     });
   });
 
@@ -781,7 +780,7 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(3);
 
-      expect(map(revisions, "userRole")).toEqual([null, null, null]);
+      expect(revisions.map((revision: any) => revision.userRole)).toEqual([null, null, null]);
     });
 
     it("logs revisions with meta data in continuous local storage", () =>
@@ -799,7 +798,7 @@ describe("SequelizeRevision", () => {
           const revisions = await Revision.findAll();
           expect(revisions.length).toBe(3);
 
-          expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
+          expect(revisions.map((revision: any) => revision.userRole)).toEqual(["admin", "admin", "admin"]);
           done();
         });
       }));
@@ -819,7 +818,7 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(3);
 
-      expect(map(revisions, "server")).toEqual(["api", "api", "api"]);
+      expect(revisions.map((revision: any) => revision.server)).toEqual(["api", "api", "api"]);
     });
 
     it("logs revisions with meta data in both continuous local storage and options", () =>
@@ -841,8 +840,8 @@ describe("SequelizeRevision", () => {
           const revisions = await Revision.findAll();
           expect(revisions.length).toBe(3);
 
-          expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
-          expect(map(revisions, "server")).toEqual(["api", "api", "api"]);
+          expect(revisions.map((revision: any) => revision.userRole)).toEqual(["admin", "admin", "admin"]);
+          expect(revisions.map((revision: any) => revision.server)).toEqual(["api", "api", "api"]);
           done();
         });
       }));

@@ -1,11 +1,6 @@
 import { createNamespace, getNamespace } from "cls-hooked";
 import type { Namespace } from "cls-hooked";
 import { diffChars } from "diff";
-import filter from "lodash.filter";
-import forEach from "lodash.foreach";
-import isUndefined from "lodash.isundefined";
-import keys from "lodash.keys";
-import map from "lodash.map";
 import omit from "lodash.omit";
 import omitBy from "lodash.omitby";
 import pick from "lodash.pick";
@@ -271,13 +266,13 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   private checkRequiredFields(opt: any) {
-    const requiredFields = keys(pickBy(this.options.metaDataFields, (required) => required));
+    const requiredFields = Object.keys(pickBy(this.options.metaDataFields, (required) => required));
     if (requiredFields && requiredFields.length) {
       const metaData = {
         ...opt.revisionMetaData,
         ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
       };
-      const requiredFieldsProvided = filter(requiredFields, (field) => metaData[field] !== undefined);
+      const requiredFieldsProvided = requiredFields.filter((field) => metaData[field] !== undefined);
       if (requiredFieldsProvided.length !== requiredFields.length) {
         debugConsole("required fields: ", this.options.metaDataFields, requiredFields);
         debugConsole("required fields provided: ", metaData, requiredFieldsProvided);
@@ -302,13 +297,13 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     }
 
     // Supported nested models.
-    previousVersion = pick(previousVersion, keys(instance.rawAttributes));
+    previousVersion = pick(previousVersion, Object.keys(instance.rawAttributes));
     previousVersion = omit(previousVersion, exclude);
-    previousVersion = omitBy(previousVersion, isUndefined);
+    previousVersion = omitBy(previousVersion, (attribute) => attribute === undefined);
 
-    currentVersion = pick(currentVersion, keys(instance.rawAttributes));
+    currentVersion = pick(currentVersion, Object.keys(instance.rawAttributes));
     currentVersion = omit(currentVersion, exclude);
-    currentVersion = omitBy(currentVersion, isUndefined);
+    currentVersion = omitBy(currentVersion, (attribute) => attribute === undefined);
 
     return { previousVersion, currentVersion };
   }
@@ -352,7 +347,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
             ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
           };
           if (metaData) {
-            forEach(this.options.metaDataFields, (required, field) => {
+            Object.keys(this.options.metaDataFields).forEach((field) => {
               const value = metaData[field];
               debugConsole("add metaData to revisions %s: %s", field, value);
               if (!(field in query)) {
@@ -378,34 +373,36 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
           });
           if (this.options.enableRevisionChangeModel) {
             const RevisionChange = this.sequelize.model(this.options.revisionChangeModel);
-            await Promise.all(
-              map(instance.context.delta, async (difference) => {
-                let document = difference;
-                let diff = this.calcDiff(difference);
+            if (instance.context.delta) {
+              await Promise.all(
+                instance.context.delta.map(async (difference: any) => {
+                  let document = difference;
+                  let diff = this.calcDiff(difference);
 
-                if (!this.options.useJsonDataType) {
-                  document = JSON.stringify(difference);
-                  diff = JSON.stringify(diff);
-                }
+                  if (!this.options.useJsonDataType) {
+                    document = JSON.stringify(difference);
+                    diff = JSON.stringify(diff);
+                  }
 
-                const revisionChange = RevisionChange.build({
-                  path: difference.path[0],
-                  document,
-                  diff,
-                  revisionId: savedRevision.id,
-                });
-
-                try {
-                  const savedRevisionChange = await revisionChange.save({
-                    transaction: opt.transaction,
+                  const revisionChange = RevisionChange.build({
+                    path: difference.path[0],
+                    document,
+                    diff,
+                    revisionId: savedRevision.id,
                   });
-                  savedRevision[`add${capitalizeFirstLetter(this.options.revisionChangeModel)}`](savedRevisionChange);
-                } catch (err) {
-                  debugConsole("revision change save error", err);
-                  throw err;
-                }
-              }),
-            );
+
+                  try {
+                    const savedRevisionChange = await revisionChange.save({
+                      transaction: opt.transaction,
+                    });
+                    savedRevision[`add${capitalizeFirstLetter(this.options.revisionChangeModel)}`](savedRevisionChange);
+                  } catch (err) {
+                    debugConsole("revision change save error", err);
+                    throw err;
+                  }
+                }),
+              );
+            }
           }
         } catch (err) {
           debugConsole("revision save error", err);
