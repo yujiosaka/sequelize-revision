@@ -12,7 +12,11 @@ describe("SequelizeRevision", () => {
   let user: User;
 
   beforeEach(async () => {
-    sequelize = new Sequelize("sqlite::memory:", { logging: false });
+    sequelize = new Sequelize({
+      dialect: "sqlite",
+      storage: ":memory:",
+      logging: false,
+    });
 
     Project.init(
       {
