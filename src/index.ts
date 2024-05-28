@@ -10,10 +10,10 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { ModelAttributes } from "sequelize";
 import type { ModelDefined, ModelStatic } from "sequelize/types/model";
 import type { F } from "ts-toolbelt";
-import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "./helpers";
-import type { Revision, RevisionChange } from "./models";
-import { defaultOptions } from "./options";
-import type { Options, SequelizeRevisionOptions } from "./options";
+import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "./helpers.js";
+import type { Revision, RevisionChange } from "./models.js";
+import { defaultOptions } from "./options.js";
+import type { Options, SequelizeRevisionOptions } from "./options.js";
 
 export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   private options: Options;

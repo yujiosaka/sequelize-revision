@@ -1,6 +1,6 @@
 import type { Model, Optional } from "sequelize";
-import type { SequelizeRevisionOptions } from "./options";
-import type { CamelToSnakeCase } from "./util-types";
+import type { SequelizeRevisionOptions } from "./options.js";
+import type { CamelToSnakeCase } from "./util-types.js";
 
 type TimestampAttributes<O extends SequelizeRevisionOptions> = {
   [CreatedAt in O["underscoredAttributes"] extends true ? CamelToSnakeCase<"createdAt"> : "createdAt"]: Date;

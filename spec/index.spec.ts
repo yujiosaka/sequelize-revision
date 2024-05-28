@@ -1,9 +1,9 @@
 import { createNamespace } from "cls-hooked";
 import { DataTypes, Sequelize } from "sequelize";
 import { beforeEach, describe, expect, it } from "vitest";
-import { SequelizeRevision } from "../src/index";
-import { Project, User } from "./models";
-import "../src/sequelize-extension";
+import { SequelizeRevision } from "../src/index.js";
+import { Project, User } from "./models.js";
+import "../src/sequelize-extension.js";
 
 describe("SequelizeRevision", () => {
   let sequelize: Sequelize;

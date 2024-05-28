@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "../src/helpers";
+import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "../src/helpers.js";
 
 describe("capitalizeFirstLetter", () => {
   it("capitalizes empty string", () => {
