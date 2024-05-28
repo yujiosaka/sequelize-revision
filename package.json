@@ -34,12 +34,6 @@
   "peerDependencies": {
     "sequelize": ">=6.1.0"
   },
-  "lint-staged": {
-    "**/*.{js,ts}": [
-      "prettier --write --ignore-unknown",
-      "eslint --fix ."
-    ]
-  },
   "dependencies": {
     "cls-hooked": "4.2.2",
     "debug": "4.3.4",
@@ -97,6 +91,14 @@
     "ts-jest": "29.1.4",
     "ts-node": "10.9.2",
     "typescript": "5.4.5"
+  },
+  "lint-staged": {
+    "**/*.{ts,js}": [
+      "eslint --fix"
+    ],
+    "**/*.{md,ts,js,json}": [
+      "prettier --write"
+    ]
   },
   "packageManager": "pnpm@9.0.5"
 }
