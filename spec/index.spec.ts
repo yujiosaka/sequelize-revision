@@ -1,6 +1,7 @@
 import { createNamespace } from "cls-hooked";
 import map from "lodash.map";
 import { DataTypes, Sequelize } from "sequelize";
+import { beforeEach, describe, expect, it } from "vitest";
 import { SequelizeRevision } from "../src/index";
 import { Project, User } from "./models";
 import "../src/sequelize-extension";
@@ -620,24 +621,25 @@ describe("SequelizeRevision", () => {
       expect(map(revisions, "userId")).toEqual([null, null, null]);
     });
 
-    it("logs revisions with userId in continuous local storage", (done) => {
-      ns.run(async () => {
-        ns.set("userId", user.id);
+    it("logs revisions with userId in continuous local storage", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("userId", user.id);
 
-        const project = await Project.create({
-          name: "sequelize-paper-trail",
-          version: 1,
+          const project = await Project.create({
+            name: "sequelize-paper-trail",
+            version: 1,
+          });
+          await project.update({ name: "sequelize-revision" });
+          await project.destroy();
+
+          const revisions = await Revision.findAll();
+          expect(revisions.length).toBe(3);
+
+          expect(map(revisions, "userId")).toEqual([user.id, user.id, user.id]);
+          done();
         });
-        await project.update({ name: "sequelize-revision" });
-        await project.destroy();
-
-        const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(3);
-
-        expect(map(revisions, "userId")).toEqual([user.id, user.id, user.id]);
-        done();
-      });
-    });
+      }));
 
     it("logs revisions with userId in options", async () => {
       const project = await Project.create(
@@ -674,67 +676,70 @@ describe("SequelizeRevision", () => {
       await sequelizeRevision.trackRevision(Project);
     });
 
-    it("logs revisions when creating a project", (done) => {
-      ns.run(async () => {
-        ns.set("userId", user.id);
+    it("logs revisions when creating a project", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("userId", user.id);
 
-        const project = await Project.create({
-          name: "sequelize-revision",
-          version: 1,
-        });
-
-        const revisions = await Revision.findAll();
-
-        expect(revisions.length).toBe(1);
-
-        expect(revisions[0].document_id).toBe(project.id);
-        expect(revisions[0].user_id).toBe(user.id);
-        done();
-      });
-    });
-
-    it("logs revisions when updating a project", (done) => {
-      ns.run(async () => {
-        ns.set("userId", user.id);
-
-        const project = await Project.create(
-          {
-            name: "sequelize-paper-trail",
-            version: 1,
-          },
-          { noRevision: true },
-        );
-        await project.update({ name: "sequelize-revision" });
-
-        const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(1);
-
-        expect(revisions[0].document_id).toBe(project.id);
-        expect(revisions[0].user_id).toBe(user.id);
-        done();
-      });
-    });
-
-    it("logs revisions when deleting a project", (done) => {
-      ns.run(async () => {
-        ns.set("userId", user.id);
-        const project = await Project.create(
-          {
+          const project = await Project.create({
             name: "sequelize-revision",
             version: 1,
-          },
-          { noRevision: true },
-        );
-        await project.destroy();
+          });
 
-        const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(1);
+          const revisions = await Revision.findAll();
 
-        expect(revisions[0].document_id).toBe(project.id);
-        expect(revisions[0].user_id).toBe(user.id);
-        done();
-      });
-    });
+          expect(revisions.length).toBe(1);
+
+          expect(revisions[0].document_id).toBe(project.id);
+          expect(revisions[0].user_id).toBe(user.id);
+          done();
+        });
+      }));
+
+    it("logs revisions when updating a project", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("userId", user.id);
+
+          const project = await Project.create(
+            {
+              name: "sequelize-paper-trail",
+              version: 1,
+            },
+            { noRevision: true },
+          );
+          await project.update({ name: "sequelize-revision" });
+
+          const revisions = await Revision.findAll();
+          expect(revisions.length).toBe(1);
+
+          expect(revisions[0].document_id).toBe(project.id);
+          expect(revisions[0].user_id).toBe(user.id);
+          done();
+        });
+      }));
+
+    it("logs revisions when deleting a project", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("userId", user.id);
+          const project = await Project.create(
+            {
+              name: "sequelize-revision",
+              version: 1,
+            },
+            { noRevision: true },
+          );
+          await project.destroy();
+
+          const revisions = await Revision.findAll();
+          expect(revisions.length).toBe(1);
+
+          expect(revisions[0].document_id).toBe(project.id);
+          expect(revisions[0].user_id).toBe(user.id);
+          done();
+        });
+      }));
   });
 
   describe("saving meta data", () => {
@@ -779,24 +784,25 @@ describe("SequelizeRevision", () => {
       expect(map(revisions, "userRole")).toEqual([null, null, null]);
     });
 
-    it("logs revisions with meta data in continuous local storage", (done) => {
-      ns.run(async () => {
-        ns.set("metaData", { userRole: "admin" });
+    it("logs revisions with meta data in continuous local storage", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("metaData", { userRole: "admin" });
 
-        const project = await Project.create({
-          name: "sequelize-paper-trail",
-          version: 1,
+          const project = await Project.create({
+            name: "sequelize-paper-trail",
+            version: 1,
+          });
+          await project.update({ name: "sequelize-revision" });
+          await project.destroy();
+
+          const revisions = await Revision.findAll();
+          expect(revisions.length).toBe(3);
+
+          expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
+          done();
         });
-        await project.update({ name: "sequelize-revision" });
-        await project.destroy();
-
-        const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(3);
-
-        expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
-        done();
-      });
-    });
+      }));
 
     it("logs revisions with meta data in options", async () => {
       const revisionMetaData = { server: "api" };
@@ -816,29 +822,30 @@ describe("SequelizeRevision", () => {
       expect(map(revisions, "server")).toEqual(["api", "api", "api"]);
     });
 
-    it("logs revisions with meta data in both continuous local storage and options", (done) => {
-      ns.run(async () => {
-        ns.set("metaData", { userRole: "admin" });
+    it("logs revisions with meta data in both continuous local storage and options", () =>
+      new Promise<void>((done) => {
+        ns.run(async () => {
+          ns.set("metaData", { userRole: "admin" });
 
-        const revisionMetaData = { server: "api" };
-        const project = await Project.create(
-          {
-            name: "sequelize-paper-trail",
-            version: 1,
-          },
-          { revisionMetaData },
-        );
-        await project.update({ name: "sequelize-revision" }, { revisionMetaData });
-        await project.destroy({ revisionMetaData });
+          const revisionMetaData = { server: "api" };
+          const project = await Project.create(
+            {
+              name: "sequelize-paper-trail",
+              version: 1,
+            },
+            { revisionMetaData },
+          );
+          await project.update({ name: "sequelize-revision" }, { revisionMetaData });
+          await project.destroy({ revisionMetaData });
 
-        const revisions = await Revision.findAll();
-        expect(revisions.length).toBe(3);
+          const revisions = await Revision.findAll();
+          expect(revisions.length).toBe(3);
 
-        expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
-        expect(map(revisions, "server")).toEqual(["api", "api", "api"]);
-        done();
-      });
-    });
+          expect(map(revisions, "userRole")).toEqual(["admin", "admin", "admin"]);
+          expect(map(revisions, "server")).toEqual(["api", "api", "api"]);
+          done();
+        });
+      }));
   });
 
   describe("logging revisions for excludeed attributes", () => {

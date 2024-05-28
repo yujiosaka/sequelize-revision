@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "jest"],
+    "types": ["node"],
     "target": "esnext",
     "module": "commonjs",
     "sourceMap": true,
@@ -16,8 +16,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", "tests/**/*"],
-  "exclude": ["dist", "node_modules"],
-  "ts-node": {
-    "files": true
-  }
+  "exclude": ["dist", "node_modules"]
 }

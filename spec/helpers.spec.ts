@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "../src/helpers";
 
 describe("capitalizeFirstLetter", () => {
@@ -227,7 +228,7 @@ describe("diffToString", () => {
 });
 
 describe("debugConsole", () => {
-  test("does not throw an error", () => {
+  it("does not throw an error", () => {
     expect(() => {
       debugConsole("logging revisions for", new URL("https://github.com/yujiosaka/sequelize-revision"));
     }).not.toThrow();
