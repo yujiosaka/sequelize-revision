@@ -1,3 +1,10 @@
+## [7.0.2](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.1...v7.0.2) (2024-05-28)
+
+
+### Bug Fixes
+
+* resolve correct path for published module ([4cab41b](https://github.com/yujiosaka/sequelize-revision/commit/4cab41bbe971b0795fae311942fec59d9129bb44))
+
 ## [7.0.1](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.0...v7.0.1) (2024-05-28)
 
 
