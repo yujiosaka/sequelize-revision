@@ -54,6 +54,9 @@ importers:
       '@types/cls-hooked':
         specifier: 4.3.8
         version: 4.3.8
+      '@types/debug':
+        specifier: ^4.1.12
+        version: 4.1.12
       '@types/deep-diff':
         specifier: 1.0.5
         version: 1.0.5
