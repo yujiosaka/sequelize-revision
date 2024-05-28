@@ -11,7 +11,7 @@ export function calcDelta(
   current: { [key: string]: any },
   next: { [key: string]: any },
   exclude: string[],
-  strict: boolean
+  strict: boolean,
 ): { [key: string]: any }[] | null {
   const di = diff(current, next);
 

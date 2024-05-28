@@ -47,34 +47,34 @@ type AlphanumericDigits =
  */
 type SnakeUnderscore<
   First extends PropertyKey,
-  Second extends PropertyKey
+  Second extends PropertyKey,
 > = First extends AlphanumericDigits
   ? Second extends UpperAlphabetic
     ? "_"
     : ""
   : First extends UpperAlphabetic | "" | "_"
-  ? ""
-  : Second extends UpperAlphabetic | AlphanumericDigits
-  ? "_"
-  : "";
+    ? ""
+    : Second extends UpperAlphabetic | AlphanumericDigits
+      ? "_"
+      : "";
 
 /**
  * Convert string literal type to snake_case
  */
 export type CamelToSnakeCase<
   S extends PropertyKey,
-  Previous extends PropertyKey = ""
+  Previous extends PropertyKey = "",
 > = S extends number
   ? S
   : S extends `__${infer K}`
-  ? `__${CamelToSnakeCase<K>}`
-  : S extends `${infer J}__${infer L}`
-  ? `${CamelToSnakeCase<J>}__${CamelToSnakeCase<L>}`
-  : S extends `${infer First}${infer Second}${infer Rest}`
-  ? `${SnakeUnderscore<Previous, First>}${Lowercase<First>}${SnakeUnderscore<
-      First,
-      Second
-    >}${Lowercase<Second>}${CamelToSnakeCase<Rest, First>}`
-  : S extends `${infer First}`
-  ? `${SnakeUnderscore<Previous, First>}${Lowercase<First>}`
-  : "";
+    ? `__${CamelToSnakeCase<K>}`
+    : S extends `${infer J}__${infer L}`
+      ? `${CamelToSnakeCase<J>}__${CamelToSnakeCase<L>}`
+      : S extends `${infer First}${infer Second}${infer Rest}`
+        ? `${SnakeUnderscore<Previous, First>}${Lowercase<First>}${SnakeUnderscore<
+            First,
+            Second
+          >}${Lowercase<Second>}${CamelToSnakeCase<Rest, First>}`
+        : S extends `${infer First}`
+          ? `${SnakeUnderscore<Previous, First>}${Lowercase<First>}`
+          : "";

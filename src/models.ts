@@ -36,8 +36,8 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
         ? CamelToSnakeCase<O["userIdAttribute"]>
         : O["userIdAttribute"]
       : O["underscoredAttributes"] extends true
-      ? CamelToSnakeCase<"userId">
-      : "userId"
+        ? CamelToSnakeCase<"userId">
+        : "userId"
     : never]: O["UUID"] extends true ? string : number;
 } & MetaDataAttributes<O> &
   TimestampAttributes<O>;
@@ -64,8 +64,8 @@ type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
       ? CamelToSnakeCase<O["revisionIdAttribute"]>
       : O["revisionIdAttribute"]
     : O["underscoredAttributes"] extends true
-    ? CamelToSnakeCase<"revisionId">
-    : "revisionId"]: O["UUID"] extends true ? string : number;
+      ? CamelToSnakeCase<"revisionId">
+      : "revisionId"]: O["UUID"] extends true ? string : number;
 } & TimestampAttributes<O>;
 
 type RevisionChangeCreationAttributes<O extends SequelizeRevisionOptions> =

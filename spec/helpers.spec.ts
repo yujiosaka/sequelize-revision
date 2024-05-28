@@ -226,16 +226,16 @@ describe("diffToString", () => {
         revisionId: "revisionId",
         undefinedId: undefined,
         nullId: null,
-      })
+      }),
     ).toBe(
-      '{"documentId":"documentId","revisionId":"revisionId","nullId":null}'
+      '{"documentId":"documentId","revisionId":"revisionId","nullId":null}',
     );
     expect(diffToString(/regex/)).toBe("{}");
   });
 
   it("converts array to string", () => {
     expect(diffToString(["createdAt", "updatedAt", null, undefined])).toBe(
-      '["createdAt","updatedAt",null,null]'
+      '["createdAt","updatedAt",null,null]',
     );
     expect(diffToString(/regex/)).toBe("{}");
   });
@@ -246,7 +246,7 @@ describe("debugConsole", () => {
     expect(() => {
       debugConsole(
         "logging revisions for",
-        new URL("https://github.com/yujiosaka/sequelize-revision")
+        new URL("https://github.com/yujiosaka/sequelize-revision"),
       );
     }).not.toThrow();
   });

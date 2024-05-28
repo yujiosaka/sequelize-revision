@@ -34,7 +34,7 @@ describe("SequelizeRevision", () => {
           type: DataTypes.INTEGER,
         },
       },
-      { sequelize }
+      { sequelize },
     );
 
     User.init(
@@ -49,7 +49,7 @@ describe("SequelizeRevision", () => {
           allowNull: false,
         },
       },
-      { sequelize }
+      { sequelize },
     );
 
     await sequelize.sync();
@@ -71,7 +71,7 @@ describe("SequelizeRevision", () => {
     it("does not log revisions when creating a project with noRevision=true", async () => {
       await Project.create(
         { name: "sequelize-revision", version: 1 },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       const revisions = await Revision.findAll();
@@ -104,11 +104,11 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update(
         { name: "sequelize-revision", version: 1 },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       const revisions = await Revision.findAll();
@@ -121,7 +121,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: 1 });
 
@@ -135,7 +135,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-paper-trail",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision" });
       await project.update({ version: 2 });
@@ -169,7 +169,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: "1" });
       expect(project.revision).toBe(1);
@@ -192,7 +192,7 @@ describe("SequelizeRevision", () => {
         await sequelize.transaction(async (transaction) => {
           const project = await Project.create(
             { name: "sequelize-paper-trail", version: 1 },
-            { transaction }
+            { transaction },
           );
           await project.update({ name: "sequelize-revision" }, { transaction });
           await project.destroy({ transaction });
@@ -211,7 +211,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.destroy();
       expect(project.revision).toBe(1);
@@ -244,11 +244,11 @@ describe("SequelizeRevision", () => {
     it("does not log revisions when upserting a project with noRevision=true", async () => {
       let [project] = await Project.upsert(
         { name: "sequelize-revision", version: 1 },
-        { noRevision: true }
+        { noRevision: true },
       );
       [project] = await Project.upsert(
         { id: project.id, version: 2 },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       const revisions = await Revision.findAll();
@@ -303,11 +303,11 @@ describe("SequelizeRevision", () => {
               name: "sequelize-revision",
               version: 1,
             },
-            { transaction }
+            { transaction },
           );
           [project] = await Project.upsert(
             { id: project.id, name: "sequelize-revision", version: 2 },
-            { transaction }
+            { transaction },
           );
           throw new Error("Transaction is failed");
         });
@@ -335,7 +335,7 @@ describe("SequelizeRevision", () => {
     it("does not log revisionChanges when creating a project with noRevision=true", async () => {
       await Project.create(
         { name: "sequelize-revision", version: 1 },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       const revisionChanges = await RevisionChange.findAll();
@@ -380,11 +380,11 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update(
         { name: "sequelize-revision", version: 1 },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       const revisionChanges = await RevisionChange.findAll();
@@ -397,7 +397,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: 1 });
 
@@ -411,7 +411,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-paper-trail",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision" });
       await project.update({ version: 2 });
@@ -447,7 +447,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: "1" });
 
@@ -472,7 +472,7 @@ describe("SequelizeRevision", () => {
         await sequelize.transaction(async (transaction) => {
           const project = await Project.create(
             { name: "sequelize-paper-trail", version: 1 },
-            { transaction }
+            { transaction },
           );
           await project.update({ name: "sequelize-revision" }, { transaction });
           await project.destroy({ transaction });
@@ -491,7 +491,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.destroy();
 
@@ -543,7 +543,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           info: { language: "typescript" },
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({
         name: "sequelize-revision",
@@ -563,7 +563,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           info: { language: "javascript" },
         },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       await project.update({ info: { language: "typescript" } });
@@ -589,7 +589,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           info: { language: "typescript" },
         },
-        { noRevision: true }
+        { noRevision: true },
       );
 
       await project.update({
@@ -670,7 +670,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-paper-trail",
           version: 1,
         },
-        { userId: user.id }
+        { userId: user.id },
       );
       await project.update({ name: "sequelize-revision" }, { userId: user.id });
       await project.destroy({ userId: user.id });
@@ -727,7 +727,7 @@ describe("SequelizeRevision", () => {
             name: "sequelize-paper-trail",
             version: 1,
           },
-          { noRevision: true }
+          { noRevision: true },
         );
         await project.update({ name: "sequelize-revision" });
 
@@ -748,7 +748,7 @@ describe("SequelizeRevision", () => {
             name: "sequelize-revision",
             version: 1,
           },
-          { noRevision: true }
+          { noRevision: true },
         );
         await project.destroy();
 
@@ -830,11 +830,11 @@ describe("SequelizeRevision", () => {
           name: "sequelize-paper-trail",
           version: 1,
         },
-        { revisionMetaData }
+        { revisionMetaData },
       );
       await project.update(
         { name: "sequelize-revision" },
-        { revisionMetaData }
+        { revisionMetaData },
       );
       await project.destroy({ revisionMetaData });
 
@@ -854,11 +854,11 @@ describe("SequelizeRevision", () => {
             name: "sequelize-paper-trail",
             version: 1,
           },
-          { revisionMetaData }
+          { revisionMetaData },
         );
         await project.update(
           { name: "sequelize-revision" },
-          { revisionMetaData }
+          { revisionMetaData },
         );
         await project.destroy({ revisionMetaData });
 
@@ -902,7 +902,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: 2 });
 
@@ -928,7 +928,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: 2 });
 
@@ -955,7 +955,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ name: "sequelize-revision", version: "1" });
 
@@ -982,7 +982,7 @@ describe("SequelizeRevision", () => {
           name: "sequelize-revision",
           version: 1,
         },
-        { noRevision: true }
+        { noRevision: true },
       );
       await project.update({ version: 2 });
 
@@ -1081,10 +1081,10 @@ describe("SequelizeRevision", () => {
       expect(revisionChanges.length).toBe(1);
 
       expect(revisionChanges[0].document).toBe(
-        '{"kind":"N","path":["name"],"rhs":"sequelize-revision"}'
+        '{"kind":"N","path":["name"],"rhs":"sequelize-revision"}',
       );
       expect(revisionChanges[0].diff).toBe(
-        '[{"count":18,"added":true,"value":"sequelize-revision"}]'
+        '[{"count":18,"added":true,"value":"sequelize-revision"}]',
       );
     });
   });
