@@ -1,5 +1,5 @@
-import { diff } from "deep-diff";
 import debug from "debug";
+import { diff } from "deep-diff";
 
 const console = debug("sequelize-revision:console");
 

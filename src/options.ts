@@ -28,16 +28,7 @@ export interface Options {
 export type SequelizeRevisionOptions = Partial<Options>;
 
 export const defaultOptions: Options = {
-  exclude: [
-    "id",
-    "createdAt",
-    "updatedAt",
-    "deletedAt",
-    "created_at",
-    "updated_at",
-    "deleted_at",
-    "revision",
-  ],
+  exclude: ["id", "createdAt", "updatedAt", "deletedAt", "created_at", "updated_at", "deleted_at", "revision"],
   revisionAttribute: "revision",
   revisionIdAttribute: "revisionId",
   revisionModel: "Revision",

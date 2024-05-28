@@ -3,13 +3,9 @@ import type { SequelizeRevisionOptions } from "./options";
 import type { CamelToSnakeCase } from "./util-types";
 
 type TimestampAttributes<O extends SequelizeRevisionOptions> = {
-  [CreatedAt in O["underscoredAttributes"] extends true
-    ? CamelToSnakeCase<"createdAt">
-    : "createdAt"]: Date;
+  [CreatedAt in O["underscoredAttributes"] extends true ? CamelToSnakeCase<"createdAt"> : "createdAt"]: Date;
 } & {
-  [UpdatedAt in O["underscoredAttributes"] extends true
-    ? CamelToSnakeCase<"updatedAt">
-    : "updatedAt"]: Date;
+  [UpdatedAt in O["underscoredAttributes"] extends true ? CamelToSnakeCase<"updatedAt"> : "updatedAt"]: Date;
 };
 
 type MetaDataAttributes<O extends SequelizeRevisionOptions> = {
@@ -22,9 +18,7 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
   document: O["useJsonDataType"] extends true ? object : string;
   operation: string;
 } & {
-  [Revision in O["revisionAttribute"] extends string
-    ? O["revisionAttribute"]
-    : "revision"]: number;
+  [Revision in O["revisionAttribute"] extends string ? O["revisionAttribute"] : "revision"]: number;
 } & {
   [DocumentId in O["underscoredAttributes"] extends true
     ? CamelToSnakeCase<"documentId">
@@ -42,15 +36,9 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
 } & MetaDataAttributes<O> &
   TimestampAttributes<O>;
 
-type RevisionCreationAttributes<O extends SequelizeRevisionOptions> = Optional<
-  RevisionAttributes<O>,
-  "id"
->;
+type RevisionCreationAttributes<O extends SequelizeRevisionOptions> = Optional<RevisionAttributes<O>, "id">;
 
-export type Revision<O extends SequelizeRevisionOptions> = Model<
-  RevisionAttributes<O>,
-  RevisionCreationAttributes<O>
-> &
+export type Revision<O extends SequelizeRevisionOptions> = Model<RevisionAttributes<O>, RevisionCreationAttributes<O>> &
   RevisionAttributes<O>;
 
 type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
@@ -68,8 +56,7 @@ type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
       : "revisionId"]: O["UUID"] extends true ? string : number;
 } & TimestampAttributes<O>;
 
-type RevisionChangeCreationAttributes<O extends SequelizeRevisionOptions> =
-  Optional<RevisionChangeAttributes<O>, "id">;
+type RevisionChangeCreationAttributes<O extends SequelizeRevisionOptions> = Optional<RevisionChangeAttributes<O>, "id">;
 
 export type RevisionChange<O extends SequelizeRevisionOptions> = Model<
   RevisionChangeAttributes<O>,

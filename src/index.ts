@@ -1,31 +1,15 @@
-import {
-  forEach,
-  map,
-  filter,
-  keys,
-  omit,
-  omitBy,
-  pick,
-  pickBy,
-  isUndefined,
-  snakeCase,
-} from "lodash";
-import { Sequelize, DataTypes, Model } from "sequelize";
-import type { ModelAttributes } from "sequelize";
-import type { ModelDefined, ModelStatic } from "sequelize/types/model";
 import { createNamespace, getNamespace } from "cls-hooked";
 import type { Namespace } from "cls-hooked";
 import { diffChars } from "diff";
-import {
-  capitalizeFirstLetter,
-  calcDelta,
-  diffToString,
-  debugConsole,
-} from "./helpers";
+import { filter, forEach, isUndefined, keys, map, omit, omitBy, pick, pickBy, snakeCase } from "lodash";
+import { DataTypes, Model, Sequelize } from "sequelize";
+import type { ModelAttributes } from "sequelize";
+import type { ModelDefined, ModelStatic } from "sequelize/types/model";
+import type { F } from "ts-toolbelt";
+import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "./helpers";
 import type { Revision, RevisionChange } from "./models";
 import { defaultOptions } from "./options";
 import type { Options, SequelizeRevisionOptions } from "./options";
-import type { F } from "ts-toolbelt";
 
 export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   private options: Options;
@@ -53,25 +37,19 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       this.createdAtAttribute = snakeCase(this.createdAtAttribute);
       this.updatedAtAttribute = snakeCase(this.updatedAtAttribute);
       this.options.userIdAttribute = snakeCase(this.options.userIdAttribute);
-      this.options.revisionIdAttribute = snakeCase(
-        this.options.revisionIdAttribute,
-      );
+      this.options.revisionIdAttribute = snakeCase(this.options.revisionIdAttribute);
     }
   }
 
   public defineModels(): O["enableRevisionChangeModel"] extends true
     ? [ModelStatic<Revision<O>>, ModelStatic<RevisionChange<O>>]
     : [ModelStatic<Revision<O>>] {
-    const Revision = this.sequelize.define<Revision<O>>(
-      this.options.revisionModel,
-      this.getRevisionAttributes(),
-      {
-        tableName: this.options.tableName,
-        createdAt: this.createdAtAttribute,
-        updatedAt: this.updatedAtAttribute,
-        underscored: this.options.underscored,
-      },
-    );
+    const Revision = this.sequelize.define<Revision<O>>(this.options.revisionModel, this.getRevisionAttributes(), {
+      tableName: this.options.tableName,
+      createdAt: this.createdAtAttribute,
+      updatedAt: this.updatedAtAttribute,
+      underscored: this.options.underscored,
+    });
 
     if (this.options.userModel) {
       Revision.belongsTo(this.sequelize.model(this.options.userModel), {
@@ -106,10 +84,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     return [Revision] as any;
   }
 
-  public async trackRevision(
-    model: ModelDefined<any, any>,
-    options: { exclude?: string[] } = {},
-  ): Promise<void> {
+  public async trackRevision(model: ModelDefined<any, any>, options: { exclude?: string[] } = {}): Promise<void> {
     debugConsole("track revisions on %s", model.name);
 
     this.addRevisionAttribute(model);
@@ -118,27 +93,12 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     }
 
     const modelExclude = options.exclude || [];
-    model.addHook(
-      "beforeCreate",
-      this.createBeforeHook("create", modelExclude),
-    );
-    model.addHook(
-      "beforeDestroy",
-      this.createBeforeHook("destroy", modelExclude),
-    );
-    model.addHook(
-      "beforeUpdate",
-      this.createBeforeHook("update", modelExclude),
-    );
-    model.addHook(
-      "beforeUpsert",
-      this.createBeforeHook("upsert", modelExclude),
-    );
+    model.addHook("beforeCreate", this.createBeforeHook("create", modelExclude));
+    model.addHook("beforeDestroy", this.createBeforeHook("destroy", modelExclude));
+    model.addHook("beforeUpdate", this.createBeforeHook("update", modelExclude));
+    model.addHook("beforeUpsert", this.createBeforeHook("upsert", modelExclude));
     model.addHook("afterCreate", this.createAfterHook("create", modelExclude));
-    model.addHook(
-      "afterDestroy",
-      this.createAfterHook("destroy", modelExclude),
-    );
+    model.addHook("afterDestroy", this.createAfterHook("destroy", modelExclude));
     model.addHook("afterUpdate", this.createAfterHook("update", modelExclude));
     model.addHook("afterUpsert", this.createAfterHook("upsert", modelExclude));
 
@@ -166,9 +126,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         allowNull: false,
       },
       document: {
-        type: this.options.useJsonDataType
-          ? DataTypes.JSON
-          : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       [this.documentIdAttribute]: {
@@ -202,15 +160,11 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         allowNull: false,
       },
       document: {
-        type: this.options.useJsonDataType
-          ? DataTypes.JSON
-          : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       diff: {
-        type: this.options.useJsonDataType
-          ? DataTypes.JSON
-          : DataTypes.TEXT("medium"),
+        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
     };
@@ -238,22 +192,16 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     model.refreshAttributes();
   }
 
-  private async addRevisionColumn(
-    model: ModelDefined<any, any>,
-  ): Promise<void> {
+  private async addRevisionColumn(model: ModelDefined<any, any>): Promise<void> {
     const tableName = model.getTableName();
     const queryInterface = this.sequelize.getQueryInterface();
     const attributes = await queryInterface.describeTable(tableName);
     if (!attributes[this.options.revisionAttribute]) {
       debugConsole("add revision column to %s", tableName);
       try {
-        await queryInterface.addColumn(
-          tableName,
-          this.options.revisionAttribute,
-          {
-            type: DataTypes.INTEGER,
-          },
-        );
+        await queryInterface.addColumn(tableName, this.options.revisionAttribute, {
+          type: DataTypes.INTEGER,
+        });
       } catch (err) {
         debugConsole("failed to add revision column", err);
       }
@@ -275,25 +223,12 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         return;
       }
 
-      const { previousVersion, currentVersion } = this.getVersions(
-        operation,
-        instance,
-        opt,
-        exclude,
-      );
+      const { previousVersion, currentVersion } = this.getVersions(operation, instance, opt, exclude);
 
       // Disallow change of revision
-      instance.set(
-        this.options.revisionAttribute,
-        instance._previousDataValues[this.options.revisionAttribute],
-      );
+      instance.set(this.options.revisionAttribute, instance._previousDataValues[this.options.revisionAttribute]);
 
-      const delta = calcDelta(
-        previousVersion,
-        currentVersion,
-        exclude,
-        this.options.enableStrictDiff,
-      );
+      const delta = calcDelta(previousVersion, currentVersion, exclude, this.options.enableStrictDiff);
 
       const currentRevisionId = instance.get(this.options.revisionAttribute);
       if (this.failHard && !currentRevisionId && opt.type === "UPDATE") {
@@ -327,29 +262,16 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   private checkRequiredFields(opt: any) {
-    const requiredFields = keys(
-      pickBy(this.options.metaDataFields, (required) => required),
-    );
+    const requiredFields = keys(pickBy(this.options.metaDataFields, (required) => required));
     if (requiredFields && requiredFields.length) {
       const metaData = {
         ...opt.revisionMetaData,
         ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
       };
-      const requiredFieldsProvided = filter(
-        requiredFields,
-        (field) => metaData[field] !== undefined,
-      );
+      const requiredFieldsProvided = filter(requiredFields, (field) => metaData[field] !== undefined);
       if (requiredFieldsProvided.length !== requiredFields.length) {
-        debugConsole(
-          "required fields: ",
-          this.options.metaDataFields,
-          requiredFields,
-        );
-        debugConsole(
-          "required fields provided: ",
-          metaData,
-          requiredFieldsProvided,
-        );
+        debugConsole("required fields: ", this.options.metaDataFields, requiredFields);
+        debugConsole("required fields provided: ", metaData, requiredFieldsProvided);
         throw new Error("Not all required fields are provided");
       }
     }
@@ -393,25 +315,13 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       debugConsole("afterHook opt: %O", opt);
 
       if (this.ns) {
-        debugConsole(
-          `cls-hooked ${this.options.continuationKey}: %s`,
-          this.ns.get(this.options.continuationKey),
-        );
+        debugConsole(`cls-hooked ${this.options.continuationKey}: %s`, this.ns.get(this.options.continuationKey));
       }
 
       const destroyOperation = operation === "destroy";
 
-      if (
-        instance.context &&
-        ((instance.context.delta && instance.context.delta.length > 0) ||
-          destroyOperation)
-      ) {
-        const { currentVersion } = this.getVersions(
-          operation,
-          instance,
-          opt,
-          exclude,
-        );
+      if (instance.context && ((instance.context.delta && instance.context.delta.length > 0) || destroyOperation)) {
+        const { currentVersion } = this.getVersions(operation, instance, opt, exclude);
 
         this.checkContinuationKey();
 
@@ -439,35 +349,26 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
               if (!(field in query)) {
                 query[field] = value;
               } else {
-                debugConsole(
-                  "revision already has a value %s: %s",
-                  field,
-                  query[field],
-                );
+                debugConsole("revision already has a value %s: %s", field, query[field]);
               }
             });
           }
         }
 
         // in case of custom user models that are not 'userId'
-        query[this.options.userIdAttribute] =
-          (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
+        query[this.options.userIdAttribute] = (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
         query[this.documentIdAttribute] = instance.id;
 
         const Revision = this.sequelize.model(this.options.revisionModel);
         const revision: any = Revision.build(query);
-        revision[this.options.revisionAttribute] = instance.get(
-          this.options.revisionAttribute,
-        );
+        revision[this.options.revisionAttribute] = instance.get(this.options.revisionAttribute);
 
         try {
           const savedRevision = await revision.save({
             transaction: opt.transaction,
           });
           if (this.options.enableRevisionChangeModel) {
-            const RevisionChange = this.sequelize.model(
-              this.options.revisionChangeModel,
-            );
+            const RevisionChange = this.sequelize.model(this.options.revisionChangeModel);
             await Promise.all(
               map(instance.context.delta, async (difference) => {
                 let document = difference;
@@ -489,11 +390,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
                   const savedRevisionChange = await revisionChange.save({
                     transaction: opt.transaction,
                   });
-                  savedRevision[
-                    `add${capitalizeFirstLetter(
-                      this.options.revisionChangeModel,
-                    )}`
-                  ](savedRevisionChange);
+                  savedRevision[`add${capitalizeFirstLetter(this.options.revisionChangeModel)}`](savedRevisionChange);
                 } catch (err) {
                   debugConsole("revision change save error", err);
                   throw err;
@@ -511,14 +408,8 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   private checkContinuationKey() {
-    if (
-      this.failHard &&
-      this.ns &&
-      !this.ns.get(this.options.continuationKey)
-    ) {
-      throw new Error(
-        `The cls-hooked continuationKey ${this.options.continuationKey} was not defined.`,
-      );
+    if (this.failHard && this.ns && !this.ns.get(this.options.continuationKey)) {
+      throw new Error(`The cls-hooked continuationKey ${this.options.continuationKey} was not defined.`);
     }
   }
 

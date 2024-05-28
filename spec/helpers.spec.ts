@@ -1,9 +1,4 @@
-import {
-  capitalizeFirstLetter,
-  calcDelta,
-  debugConsole,
-  diffToString,
-} from "../src/helpers";
+import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "../src/helpers";
 
 describe("capitalizeFirstLetter", () => {
   it("capitalizes empty string", () => {
@@ -34,8 +29,7 @@ describe("calcDelta", () => {
     const user1 = {
       id: 1,
       email: "test@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: null,
       reset_password_sent_at: null,
       account_completed: false,
@@ -44,8 +38,7 @@ describe("calcDelta", () => {
     const user2 = {
       id: 1,
       email: "test2@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: null,
       reset_password_sent_at: null,
       account_completed: false,
@@ -65,8 +58,7 @@ describe("calcDelta", () => {
     const user1 = {
       id: 1,
       email: "test@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: null,
       reset_password_sent_at: null,
       account_completed: false,
@@ -75,8 +67,7 @@ describe("calcDelta", () => {
     const user2 = {
       id: 1,
       email: "test@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: true,
       reset_password_sent_at: null,
       account_completed: false,
@@ -96,8 +87,7 @@ describe("calcDelta", () => {
     const user1 = {
       id: 1,
       email: "test@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: null,
       reset_password_sent_at: null,
       account_completed: false,
@@ -106,8 +96,7 @@ describe("calcDelta", () => {
     const user2 = {
       id: 1,
       email: "test@user.com",
-      encrypted_password:
-        "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
+      encrypted_password: "$2a$10$rNIOuy1pDl7bI5dTE.xMle/vcB51V2nJVpb/EBAwG4egXE42UfDMS",
       reset_password_token: null,
       reset_password_sent_at: null,
       account_completed: true,
@@ -227,16 +216,12 @@ describe("diffToString", () => {
         undefinedId: undefined,
         nullId: null,
       }),
-    ).toBe(
-      '{"documentId":"documentId","revisionId":"revisionId","nullId":null}',
-    );
+    ).toBe('{"documentId":"documentId","revisionId":"revisionId","nullId":null}');
     expect(diffToString(/regex/)).toBe("{}");
   });
 
   it("converts array to string", () => {
-    expect(diffToString(["createdAt", "updatedAt", null, undefined])).toBe(
-      '["createdAt","updatedAt",null,null]',
-    );
+    expect(diffToString(["createdAt", "updatedAt", null, undefined])).toBe('["createdAt","updatedAt",null,null]');
     expect(diffToString(/regex/)).toBe("{}");
   });
 });
@@ -244,10 +229,7 @@ describe("diffToString", () => {
 describe("debugConsole", () => {
   test("does not throw an error", () => {
     expect(() => {
-      debugConsole(
-        "logging revisions for",
-        new URL("https://github.com/yujiosaka/sequelize-revision"),
-      );
+      debugConsole("logging revisions for", new URL("https://github.com/yujiosaka/sequelize-revision"));
     }).not.toThrow();
   });
 });

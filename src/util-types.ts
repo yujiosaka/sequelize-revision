@@ -28,27 +28,14 @@ type UpperAlphabetic =
   | "Y"
   | "Z";
 
-type AlphanumericDigits =
-  | "1"
-  | "2"
-  | "3"
-  | "4"
-  | "5"
-  | "6"
-  | "7"
-  | "8"
-  | "9"
-  | "0";
+type AlphanumericDigits = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "0";
 
 /**
  * Return underscore if it is allowed between provided characters,
  * trail and lead underscore are allowed, empty string is considered
  * as the beginning of a string.
  */
-type SnakeUnderscore<
-  First extends PropertyKey,
-  Second extends PropertyKey,
-> = First extends AlphanumericDigits
+type SnakeUnderscore<First extends PropertyKey, Second extends PropertyKey> = First extends AlphanumericDigits
   ? Second extends UpperAlphabetic
     ? "_"
     : ""
@@ -61,10 +48,7 @@ type SnakeUnderscore<
 /**
  * Convert string literal type to snake_case
  */
-export type CamelToSnakeCase<
-  S extends PropertyKey,
-  Previous extends PropertyKey = "",
-> = S extends number
+export type CamelToSnakeCase<S extends PropertyKey, Previous extends PropertyKey = ""> = S extends number
   ? S
   : S extends `__${infer K}`
     ? `__${CamelToSnakeCase<K>}`
