@@ -1,3 +1,16 @@
+# [7.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v6.0.0...v7.0.0) (2024-05-28)
+
+
+### Features
+
+* change module type from cjs to esm ([42bb35d](https://github.com/yujiosaka/sequelize-revision/commit/42bb35db563819a159c6293bf530b305b1f3334a))
+
+
+### BREAKING CHANGES
+
+* The module type has been changed from cjs to esm.
+This change may require updates in the way the package is imported.
+
 # [6.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v5.2.1...v6.0.0) (2022-06-19)
 
 
