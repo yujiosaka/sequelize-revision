@@ -2,10 +2,10 @@
 
 [![npm-version](https://img.shields.io/npm/v/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
 [![npm-downloads](https://img.shields.io/npm/dt/sequelize-revision.svg)](https://www.npmjs.org/package/sequelize-revision)
-[![CircleCI](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master.svg?style=shield)](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/master)
-[![license](https://img.shields.io/github/license/yujiosaka/sequelize-revision.svg)](https://github.com/yujiosaka/sequelize-revision/blob/master/LICENSE)
+[![CircleCI](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/main.svg?style=shield)](https://circleci.com/gh/yujiosaka/sequelize-revision/tree/main)
+[![license](https://img.shields.io/github/license/yujiosaka/sequelize-revision.svg)](https://github.com/yujiosaka/sequelize-revision/blob/main/LICENSE)
 
-###### [TIPS](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TIPS.md) \| [Troubleshooting](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/TROUBLESHOOTING.md) \| [Code of Conduct](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CODE_OF_CONDUCT.md) \| [Contributing](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CONTRIBUTING.md) \| [Security Policy](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/SECURITY.md) \| [Changelog](https://github.com/yujiosaka/sequelize-revision/blob/master/docs/CHANGELOG.md)
+###### [TIPS](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/TIPS.md) \| [Troubleshooting](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/TROUBLESHOOTING.md) \| [Code of Conduct](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/CODE_OF_CONDUCT.md) \| [Contributing](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/CONTRIBUTING.md) \| [Security Policy](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/SECURITY.md) \| [Changelog](https://github.com/yujiosaka/sequelize-revision/blob/main/docs/CHANGELOG.md)
 
 > Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript).
 
