@@ -38,11 +38,8 @@ export function diffToString(val: unknown): string {
   if (typeof val === "undefined" || val === null) {
     return "";
   }
-  if (val === true) {
-    return "1";
-  }
-  if (val === false) {
-    return "0";
+  if (typeof val === "boolean") {
+    return val ? "1" : "0";
   }
   if (typeof val === "string") {
     return val;
@@ -50,15 +47,12 @@ export function diffToString(val: unknown): string {
   if (!Number.isNaN(Number(val))) {
     return String(val);
   }
-  if (typeof val === "object") {
-    return JSON.stringify(val);
-  }
-  if (Array.isArray(val)) {
+  if (typeof val === "object" || Array.isArray(val)) {
     return JSON.stringify(val);
   }
   return "";
 }
 
-export function debugConsole(formatter: unknown, ...args: unknown[]) {
+export function debugConsole(formatter: unknown, ...args: unknown[]): void {
   console(formatter, ...args);
 }

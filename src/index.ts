@@ -267,7 +267,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
 
   private checkRequiredFields(opt: any) {
     const requiredFields = Object.keys(pickBy(this.options.metaDataFields, (required) => required));
-    if (requiredFields && requiredFields.length) {
+    if (requiredFields.length) {
       const metaData = {
         ...opt.revisionMetaData,
         ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
