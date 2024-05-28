@@ -1,7 +1,16 @@
 import { createNamespace, getNamespace } from "cls-hooked";
 import type { Namespace } from "cls-hooked";
 import { diffChars } from "diff";
-import { filter, forEach, isUndefined, keys, map, omit, omitBy, pick, pickBy, snakeCase } from "lodash";
+import filter from "lodash.filter";
+import forEach from "lodash.foreach";
+import isUndefined from "lodash.isundefined";
+import keys from "lodash.keys";
+import map from "lodash.map";
+import omit from "lodash.omit";
+import omitBy from "lodash.omitby";
+import pick from "lodash.pick";
+import pickBy from "lodash.pickby";
+import snakeCase from "lodash.snakecase";
 import { DataTypes, Model, Sequelize } from "sequelize";
 import type { ModelAttributes } from "sequelize";
 import type { ModelDefined, ModelStatic } from "sequelize/types/model";

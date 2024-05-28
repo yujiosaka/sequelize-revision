@@ -1,5 +1,5 @@
 import { createNamespace } from "cls-hooked";
-import { map } from "lodash";
+import map from "lodash.map";
 import { DataTypes, Sequelize } from "sequelize";
 import { SequelizeRevision } from "../src/index";
 import { Project, User } from "./models";
