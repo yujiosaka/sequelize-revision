@@ -1,5 +1,5 @@
 import debug from "debug";
-import { diff } from "deep-diff";
+import deepDiff from "deep-diff";
 
 const console = debug("sequelize-revision");
 
@@ -13,7 +13,7 @@ export function calcDelta(
   exclude: string[],
   strict: boolean,
 ): { [key: string]: any }[] | null {
-  const di = diff(current, next);
+  const di = deepDiff.diff(current, next);
 
   let diffs = [];
   if (di) {
