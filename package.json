@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "format": "prettier **/*.{md,ts,js} -w",
-    "format:check": "prettier **/*.{md,ts,js} --check",
+    "format": "prettier **/*.{md,ts,js,json} -w",
+    "format:check": "prettier **/*.{md,ts,js,json} --check",
     "lint": "eslint **/*.{ts,js} --quiet",
     "lint:fix": "eslint **/*.{ts,js} --quiet --fix",
     "test": "jest",
