@@ -2,7 +2,8 @@
   "name": "sequelize-revision",
   "version": "6.0.0",
   "description": "Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with sequelize-typescript.",
-  "main": "dist/index.js",
+  "type": "module",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
@@ -31,6 +32,9 @@
     "url": "https://github.com/yujiosaka/sequelize-revision/issues"
   },
   "homepage": "https://github.com/yujiosaka/sequelize-revision#readme",
+  "files": [
+    "dist"
+  ],
   "peerDependencies": {
     "sequelize": ">=6.1.0"
   },

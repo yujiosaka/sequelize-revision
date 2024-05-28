@@ -1,20 +1,28 @@
 {
   "compilerOptions": {
+    // Enable latest features
     "types": ["node"],
-    "target": "esnext",
-    "module": "commonjs",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "moduleResolution": "node",
-    "declaration": true,
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleDetection": "force",
+    "allowJs": true,
+
+    // Bundler mode
+    "moduleResolution": "Bundler",
+    "noEmit": true,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+
+    // Best practices
+    "strict": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "noFallthroughCasesInSwitch": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "spec/**/*"],
   "exclude": ["dist", "node_modules"]
 }
