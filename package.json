@@ -6,6 +6,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "format": "prettier **/*.{md,ts,js} -w",
+    "format:check": "prettier **/*.{md,ts,js} --check",
+    "lint": "eslint **/*.{ts,js} --quiet",
+    "lint:fix": "eslint **/*.{ts,js} --quiet --fix",
     "test": "jest",
     "prepare": "husky",
     "prepublishOnly": "pnpm run build"
