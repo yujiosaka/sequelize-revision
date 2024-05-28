@@ -34,7 +34,7 @@ export function calcDelta(
   return null;
 }
 
-export function diffToString(val: any): string {
+export function diffToString(val: unknown): string {
   if (typeof val === "undefined" || val === null) {
     return "";
   }
@@ -59,6 +59,6 @@ export function diffToString(val: any): string {
   return "";
 }
 
-export function debugConsole(formatter: any, ...args: any[]) {
+export function debugConsole(formatter: unknown, ...args: unknown[]) {
   console(formatter, ...args);
 }
