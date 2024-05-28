@@ -1,7 +1,7 @@
 import debug from "debug";
 import { diff } from "deep-diff";
 
-const console = debug("sequelize-revision:console");
+const console = debug("sequelize-revision");
 
 export function capitalizeFirstLetter(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
