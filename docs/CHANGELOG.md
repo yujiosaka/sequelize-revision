@@ -1,3 +1,10 @@
+## [7.0.1](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.0...v7.0.1) (2024-05-28)
+
+
+### Bug Fixes
+
+* add main filed to package.json ([5086941](https://github.com/yujiosaka/sequelize-revision/commit/5086941f9564153f649ba0bd87ca5404cec94883))
+
 # [7.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v6.0.0...v7.0.0) (2024-05-28)
 
 
