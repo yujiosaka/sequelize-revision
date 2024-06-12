@@ -86,7 +86,7 @@ There are 2 steps to enable user tracking, ie, recording the user who created a 
 const sequelizeRevision = new SequelizeRevision(sequelize, { userModel: "user" });
 ```
 
-2. Pass the id of the user who is responsible for the database operation to revisions either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
+2. Pass the id of the user who is responsible for the database operation to revisions either by sequelize options or by using [AsyncLocalStorage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
 
 ```typescript
 await Model.update({ /* ... */ }, { userId: user.id });
@@ -95,16 +95,14 @@ await Model.update({ /* ... */ }, { userId: user.id });
 OR
 
 ```typescript
-import { createNamespace } = from "cls-hooked";
+import { AsyncLocalStorage } from "async_hooks";
 
-const session = createNamespace("my session");
-session.set("userId", user.id);
+const asyncLocalStorage = new AsyncLocalStorage();
 
-await Model.update({ /* ... */ });
+await asyncLocalStorage.run(user.id, async () => {
+  await Model.update({ /* ... */ });
+});
 ```
-
-To enable cls-hooked set `continuationNamespace` in initialization options.
-Additionally, you may also have to call `.run()` or `.bind()` on your cls namespace, as described in the [docs](https://www.npmjs.com/package/cls-hooked).
 
 ## Disable logging for a single call
 
@@ -124,7 +122,7 @@ You can save meta data to revisions table in 2 steps Whne revisions table alread
 const sequelizeRevision = new SequelizeRevision(sequelize, { metaDataFields: { userRole: false } });
 ```
 
-2. Pass the metadata to revisions either by sequelize options or by using [cls-hooked](https://www.npmjs.com/package/cls-hooked).
+2. Pass the metadata to revisions either by sequelize options or by using [AsyncLocalStorage](https://nodejs.org/api/async_context.html#class-asynclocalstorage).
 
 ```typescript
 await Model.update({ /* ... */ }, { revisionMetaData: { userRole: "admin" } });
@@ -133,15 +131,14 @@ await Model.update({ /* ... */ }, { revisionMetaData: { userRole: "admin" } });
 OR
 
 ```typescript
-import { createNamespace } = from "cls-hooked";
+import { AsyncLocalStorage } from "async_hooks";
 
-const session = createNamespace("my session");
-session.set("metaData", { userRole: "admin" });
+const metaDataAsyncLocalStorage = new AsyncLocalStorage();
 
-await Model.update({ /* ... */ });
+await metaDataAsyncLocalStorage.run({ userRole: "admin" }, async () => {
+  await Model.update({ /* ... */ });
+});
 ```
-
-To enable cls-hooked set continuationNamespace in initialization options. Additionally, you may also have to call .run() or .bind() on your cls namespace, as described in the docs.
 
 ## Exclude attributes
 

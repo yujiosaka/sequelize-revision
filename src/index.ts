@@ -1,5 +1,3 @@
-import { createNamespace, getNamespace } from "cls-hooked";
-import type { Namespace } from "cls-hooked";
 import { diffChars } from "diff";
 import omit from "lodash.omit";
 import omitBy from "lodash.omitby";
@@ -17,7 +15,6 @@ import type { Options, SequelizeRevisionOptions } from "./options.js";
 
 export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   private options: Options;
-  private ns?: Namespace;
   private documentIdAttribute = "documentId";
   private createdAtAttribute = "createdAt";
   private updatedAtAttribute = "updatedAt";
@@ -28,14 +25,6 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     options?: F.Narrow<O>,
   ) {
     this.options = Object.assign({}, defaultOptions, options);
-
-    if (this.options.continuationNamespace) {
-      this.ns = getNamespace(this.options.continuationNamespace);
-      if (!this.ns) {
-        this.ns = createNamespace(this.options.continuationNamespace);
-      }
-    }
-
     if (this.options.underscoredAttributes) {
       this.documentIdAttribute = snakeCase(this.documentIdAttribute);
       this.createdAtAttribute = snakeCase(this.createdAtAttribute);
@@ -116,7 +105,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   /**
-   * Throw exceptions when the user identifier from cls-hooked is not set or if the
+   * Throw exceptions when the user identifier from asyncLocalStorage is not set or if the
    * revisionAttribute was not loaded on the model.
    */
   enableFailHard() {
@@ -242,7 +231,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       debugConsole("delta: %O", delta);
       debugConsole("revisionId: %s", currentRevisionId);
 
-      // Check if all required fields have been provided to the opts / cls-hooked
+      // Check if all required fields have been provided to the opts / AsyncLocalStorage
       if (this.options.metaDataFields) {
         this.checkRequiredFields(opt);
       }
@@ -270,7 +259,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     if (requiredFields.length) {
       const metaData = {
         ...opt.revisionMetaData,
-        ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
+        ...this.options.metaDataAsyncLocalStorage?.getStore(),
       };
       const requiredFieldsProvided = requiredFields.filter((field) => metaData[field] !== undefined);
       if (requiredFieldsProvided.length !== requiredFields.length) {
@@ -318,8 +307,8 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       debugConsole("afterHook instance: %O", instance);
       debugConsole("afterHook opt: %O", opt);
 
-      if (this.ns) {
-        debugConsole(`cls-hooked ${this.options.continuationKey}: %s`, this.ns.get(this.options.continuationKey));
+      if (this.options.asyncLocalStorage) {
+        debugConsole(`AsyncLocalStorage: %s`, this.options.asyncLocalStorage.getStore());
       }
 
       const destroyOperation = operation === "destroy";
@@ -344,7 +333,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         if (this.options.metaDataFields) {
           const metaData = {
             ...opt.revisionMetaData,
-            ...(this.ns && this.ns.get(this.options.metaDataContinuationKey)),
+            ...this.options.metaDataAsyncLocalStorage?.getStore(),
           };
           if (metaData) {
             Object.keys(this.options.metaDataFields).forEach((field) => {
@@ -360,7 +349,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         }
 
         // in case of custom user models that are not 'userId'
-        query[this.options.userIdAttribute] = (this.ns && this.ns.get(this.options.continuationKey)) || opt.userId;
+        query[this.options.userIdAttribute] = this.options.asyncLocalStorage?.getStore() || opt.userId;
         query[this.documentIdAttribute] = instance.id;
 
         const Revision = this.sequelize.model(this.options.revisionModel);
@@ -414,8 +403,8 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   private checkContinuationKey() {
-    if (this.failHard && this.ns && !this.ns.get(this.options.continuationKey)) {
-      throw new Error(`The cls-hooked continuationKey ${this.options.continuationKey} was not defined.`);
+    if (this.failHard && this.options.asyncLocalStorage && !this.options.asyncLocalStorage.getStore()) {
+      throw new Error(`AsyncLocalStorage ${this.options.asyncLocalStorage.getStore()} was not defined.`);
     }
   }
 

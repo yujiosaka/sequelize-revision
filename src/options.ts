@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "async_hooks";
 import type { BelongsToOptions } from "sequelize";
 
 export interface Options {
@@ -15,10 +16,9 @@ export interface Options {
   enableCompression: boolean;
   enableMigration: boolean;
   enableStrictDiff: boolean;
-  continuationNamespace?: string;
-  continuationKey: string;
+  asyncLocalStorage?: AsyncLocalStorage<unknown>;
   metaDataFields?: { [key: string]: boolean };
-  metaDataContinuationKey: string;
+  metaDataAsyncLocalStorage?: AsyncLocalStorage<Record<string, unknown>>;
   tableName?: string;
   changeTableName?: string;
   belongsToUserOptions?: BelongsToOptions;
@@ -42,10 +42,9 @@ export const defaultOptions: Options = {
   enableCompression: false,
   enableMigration: false,
   enableStrictDiff: true,
-  continuationNamespace: undefined,
-  continuationKey: "userId",
+  asyncLocalStorage: undefined,
   metaDataFields: undefined,
-  metaDataContinuationKey: "metaData",
+  metaDataAsyncLocalStorage: undefined,
   tableName: undefined,
   changeTableName: undefined,
   belongsToUserOptions: undefined,
