@@ -1,3 +1,15 @@
+# [8.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.3...v8.0.0) (2024-06-12)
+
+
+### Features
+
+* migrate from cls-hooked to AsyncLocalStorage ([585c804](https://github.com/yujiosaka/sequelize-revision/commit/585c8048e0621c29442a2ecc0f55998d3fa71653))
+
+
+### BREAKING CHANGES
+
+* cls-hooked is no longer supported
+
 ## [7.0.3](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.2...v7.0.3) (2024-05-28)
 
 
