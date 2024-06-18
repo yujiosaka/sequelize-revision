@@ -1,3 +1,21 @@
+# [9.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v8.0.0...v9.0.0) (2024-06-18)
+
+
+### Bug Fixes
+
+* drop support for UUID option ([428d64f](https://github.com/yujiosaka/sequelize-revision/commit/428d64fd888fa47e9b9642fa571c16de02f0f766))
+
+
+### Features
+
+* support composite key ([6de7ac5](https://github.com/yujiosaka/sequelize-revision/commit/6de7ac597d156b0ed2d2231337557f54cef88ca0))
+* support ulid primary key type ([fe76162](https://github.com/yujiosaka/sequelize-revision/commit/fe76162438f32679caf08313eb1ed2220e87e9f3))
+
+
+### BREAKING CHANGES
+
+* migration is necessary to add `documentIds` field
+
 # [8.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v7.0.3...v8.0.0) (2024-06-12)
 
 
