@@ -9,6 +9,13 @@ export class Project extends Model<InferAttributes<Project>, InferCreationAttrib
   declare info?: object | null;
 }
 
+export class ProjectSetting extends Model<InferAttributes<ProjectSetting>, InferCreationAttributes<ProjectSetting>> {
+  declare project_id: CreationOptional<number>;
+  declare key: CreationOptional<string>;
+  declare value: string | number;
+  declare revision?: number | null;
+}
+
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare id: CreationOptional<number>;
   declare name: string;

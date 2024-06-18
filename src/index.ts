@@ -16,6 +16,7 @@ import type { Options, SequelizeRevisionOptions } from "./options.js";
 export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   private options: Options;
   private documentIdAttribute = "documentId";
+  private documentIdsAttribute = "documentIds";
   private createdAtAttribute = "createdAt";
   private updatedAtAttribute = "updatedAt";
   private failHard = false;
@@ -27,6 +28,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     this.options = Object.assign({}, defaultOptions, options);
     if (this.options.underscoredAttributes) {
       this.documentIdAttribute = snakeCase(this.documentIdAttribute);
+      this.documentIdsAttribute = snakeCase(this.documentIdsAttribute);
       this.createdAtAttribute = snakeCase(this.createdAtAttribute);
       this.updatedAtAttribute = snakeCase(this.updatedAtAttribute);
       this.options.userIdAttribute = snakeCase(this.options.userIdAttribute);
@@ -124,6 +126,10 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       },
       [this.documentIdAttribute]: {
         type: this.options.UUID ? DataTypes.UUID : DataTypes.INTEGER,
+        allowNull: false,
+      },
+      [this.documentIdsAttribute]: {
+        type: this.options.useJsonDataType ? DataTypes.JSON : DataTypes.TEXT("medium"),
         allowNull: false,
       },
       operation: DataTypes.STRING(7),
@@ -350,7 +356,18 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
 
         // in case of custom user models that are not 'userId'
         query[this.options.userIdAttribute] = this.options.asyncLocalStorage?.getStore() || opt.userId;
-        query[this.documentIdAttribute] = instance.id;
+        query[this.documentIdAttribute] = instance[instance.constructor.primaryKeyAttribute];
+        query[this.documentIdsAttribute] = Object.keys(instance.constructor.primaryKeyAttributes).reduce(
+          (documentIds, i) => {
+            const attribute = instance.constructor.primaryKeyAttributes[i];
+            documentIds[attribute] = instance[attribute];
+            return documentIds;
+          },
+          {} as Record<string, unknown>,
+        );
+        if (!this.options.useJsonDataType) {
+          query[this.documentIdsAttribute] = JSON.stringify(query[this.documentIdsAttribute]);
+        }
 
         const Revision = this.sequelize.model(this.options.revisionModel);
         const revision: any = Revision.build(query);

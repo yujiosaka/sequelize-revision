@@ -2,7 +2,6 @@
 
 - [Revisions are not loggeed when running bulk operations](#revisions-are-not-loggeed-when-running-bulk-operations)
 - [Revisions are logged for upsert operations even if there is no change in attributes](#revisions-are-logged-for-upsert-operations-even-if-there-is-no-change-in-attributes)
-- [Composite key is not supported](#composite-key-is-not-supported)
 
 ## Revisions are not loggeed when running bulk operations
 
@@ -69,7 +68,3 @@ if (attributes.id) {
   await model.insert(attributes);
 }
 ```
-
-## Composite key is not supported
-
-Sequelize Revision does not support models with composite primary keys. You can work around using a unique index with multiple fields.

@@ -24,6 +24,10 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
     ? CamelToSnakeCase<"documentId">
     : "documentId"]: O["UUID"] extends true ? string : number;
 } & {
+  [DocumentIds in O["underscoredAttributes"] extends true
+    ? CamelToSnakeCase<"documentIds">
+    : "documentIds"]: O["useJsonDataType"] extends true ? object : string;
+} & {
   [UserId in O["userModel"] extends string
     ? O["userIdAttribute"] extends string
       ? O["underscoredAttributes"] extends true
