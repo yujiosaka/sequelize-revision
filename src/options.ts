@@ -8,8 +8,6 @@ export interface Options {
   revisionModel: string;
   revisionChangeModel: string;
   enableRevisionChangeModel: boolean;
-  /** @deprecated Use `primaryKeyType` option instead */
-  UUID: boolean;
   primaryKeyType: "serial" | "uuid" | "ulid";
   underscored: boolean;
   underscoredAttributes: boolean;
@@ -36,7 +34,6 @@ export const defaultOptions: Options = {
   revisionModel: "Revision",
   revisionChangeModel: "RevisionChange",
   enableRevisionChangeModel: false,
-  UUID: false,
   primaryKeyType: "serial",
   underscored: false,
   underscoredAttributes: false,

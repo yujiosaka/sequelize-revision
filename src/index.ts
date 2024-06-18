@@ -27,9 +27,6 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     options?: F.Narrow<O>,
   ) {
     this.options = Object.assign({}, defaultOptions, options);
-    if (this.options.UUID) {
-      console.warn("`UUID` option is deprecated. Use `primaryKeyType` option instead");
-    }
     if (!["serial", "uuid", "ulid"].includes(this.options.primaryKeyType)) {
       throw new Error(`primaryKeyType: ${this.options.primaryKeyType} is not supported`);
     }
@@ -123,7 +120,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
 
   private getRevisionAttributes(): ModelAttributes {
     let idType;
-    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
+    if (this.options.primaryKeyType === "uuid") {
       idType = DataTypes.UUID;
     } else if (this.options.primaryKeyType === "ulid") {
       idType = DataTypes.STRING;
@@ -155,7 +152,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       },
     };
 
-    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
+    if (this.options.primaryKeyType === "uuid") {
       attributes.id = {
         primaryKey: true,
         type: DataTypes.UUID,
@@ -190,7 +187,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       },
     };
 
-    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
+    if (this.options.primaryKeyType === "uuid") {
       attributes.id = {
         primaryKey: true,
         type: DataTypes.UUID,

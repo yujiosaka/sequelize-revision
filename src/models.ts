@@ -13,13 +13,7 @@ type MetaDataAttributes<O extends SequelizeRevisionOptions> = {
 };
 
 type RevisionAttributes<O extends SequelizeRevisionOptions> = {
-  id: O["UUID"] extends true
-    ? string
-    : O["primaryKeyType"] extends "uuid" | "ulid"
-      ? string
-      : O["primaryKeyType"] extends "serial"
-        ? number
-        : never;
+  id: O["primaryKeyType"] extends "serial" ? number : O["primaryKeyType"] extends "uuid" | "ulid" ? string : never;
   model: string;
   document: O["useJsonDataType"] extends true ? object : string;
   operation: string;
@@ -28,13 +22,11 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
 } & {
   [DocumentId in O["underscoredAttributes"] extends true
     ? CamelToSnakeCase<"documentId">
-    : "documentId"]: O["UUID"] extends true
-    ? string
+    : "documentId"]: O["primaryKeyType"] extends "serial"
+    ? number
     : O["primaryKeyType"] extends "uuid" | "ulid"
       ? string
-      : O["primaryKeyType"] extends "serial"
-        ? number
-        : never;
+      : never;
 } & {
   [DocumentIds in O["underscoredAttributes"] extends true
     ? CamelToSnakeCase<"documentIds">
@@ -48,13 +40,7 @@ type RevisionAttributes<O extends SequelizeRevisionOptions> = {
       : O["underscoredAttributes"] extends true
         ? CamelToSnakeCase<"userId">
         : "userId"
-    : never]: O["UUID"] extends true
-    ? string
-    : O["primaryKeyType"] extends "uuid" | "ulid"
-      ? string
-      : O["primaryKeyType"] extends "serial"
-        ? number
-        : never;
+    : never]: O["primaryKeyType"] extends "serial" ? number : O["primaryKeyType"] extends "uuid" | "ulid" ? string : never;
 } & MetaDataAttributes<O> &
   TimestampAttributes<O>;
 
@@ -64,13 +50,7 @@ export type Revision<O extends SequelizeRevisionOptions> = Model<RevisionAttribu
   RevisionAttributes<O>;
 
 type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
-  id: O["UUID"] extends true
-    ? string
-    : O["primaryKeyType"] extends "uuid" | "ulid"
-      ? string
-      : O["primaryKeyType"] extends "serial"
-        ? number
-        : never;
+  id: O["primaryKeyType"] extends "serial" ? number : O["primaryKeyType"] extends "uuid" | "ulid" ? string : never;
   path: string;
   document: O["useJsonDataType"] extends true ? object : string;
   diff: O["useJsonDataType"] extends true ? object : string;
@@ -81,13 +61,11 @@ type RevisionChangeAttributes<O extends SequelizeRevisionOptions> = {
       : O["revisionIdAttribute"]
     : O["underscoredAttributes"] extends true
       ? CamelToSnakeCase<"revisionId">
-      : "revisionId"]: O["UUID"] extends true
-    ? string
+      : "revisionId"]: O["primaryKeyType"] extends "serial"
+    ? number
     : O["primaryKeyType"] extends "uuid" | "ulid"
       ? string
-      : O["primaryKeyType"] extends "serial"
-        ? number
-        : never;
+      : never;
 } & TimestampAttributes<O>;
 
 type RevisionChangeCreationAttributes<O extends SequelizeRevisionOptions> = Optional<RevisionChangeAttributes<O>, "id">;
