@@ -48,7 +48,8 @@
     "lodash.pick": "4.4.0",
     "lodash.pickby": "4.6.0",
     "lodash.snakecase": "4.1.1",
-    "ts-toolbelt": "9.6.0"
+    "ts-toolbelt": "9.6.0",
+    "ulid": "2.3.0"
   },
   "devDependencies": {
     "@commitlint/cli": "19.3.0",

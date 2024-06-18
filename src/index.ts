@@ -8,6 +8,7 @@ import { DataTypes, Model, Sequelize } from "sequelize";
 import type { ModelAttributes } from "sequelize";
 import type { ModelDefined, ModelStatic } from "sequelize/types/model";
 import type { F } from "ts-toolbelt";
+import { ulid } from "ulid";
 import { calcDelta, capitalizeFirstLetter, debugConsole, diffToString } from "./helpers.js";
 import type { Revision, RevisionChange } from "./models.js";
 import { defaultOptions } from "./options.js";
@@ -26,6 +27,12 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     options?: F.Narrow<O>,
   ) {
     this.options = Object.assign({}, defaultOptions, options);
+    if (this.options.UUID) {
+      console.warn("`UUID` option is deprecated. Use `primaryKeyType` option instead");
+    }
+    if (!["serial", "uuid", "ulid"].includes(this.options.primaryKeyType)) {
+      throw new Error(`primaryKeyType: ${this.options.primaryKeyType} is not supported`);
+    }
     if (this.options.underscoredAttributes) {
       this.documentIdAttribute = snakeCase(this.documentIdAttribute);
       this.documentIdsAttribute = snakeCase(this.documentIdsAttribute);
@@ -115,6 +122,15 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
   }
 
   private getRevisionAttributes(): ModelAttributes {
+    let idType;
+    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
+      idType = DataTypes.UUID;
+    } else if (this.options.primaryKeyType === "ulid") {
+      idType = DataTypes.STRING;
+    } else {
+      idType = DataTypes.INTEGER;
+    }
+
     const attributes: ModelAttributes = {
       model: {
         type: DataTypes.STRING,
@@ -125,7 +141,7 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         allowNull: false,
       },
       [this.documentIdAttribute]: {
-        type: this.options.UUID ? DataTypes.UUID : DataTypes.INTEGER,
+        type: idType,
         allowNull: false,
       },
       [this.documentIdsAttribute]: {
@@ -139,11 +155,17 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       },
     };
 
-    if (this.options.UUID) {
+    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
       attributes.id = {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      };
+    } else if (this.options.primaryKeyType === "ulid") {
+      attributes.id = {
+        primaryKey: true,
+        type: DataTypes.STRING,
+        defaultValue: ulid,
       };
     }
 
@@ -168,11 +190,17 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
       },
     };
 
-    if (this.options.UUID) {
+    if (this.options.primaryKeyType === "uuid" || this.options.UUID) {
       attributes.id = {
         primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+      };
+    } else if (this.options.primaryKeyType === "ulid") {
+      attributes.id = {
+        primaryKey: true,
+        type: DataTypes.STRING,
+        defaultValue: () => ulid(),
       };
     }
 

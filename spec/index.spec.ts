@@ -1,15 +1,17 @@
 import { DataTypes, Sequelize } from "sequelize";
+import { ulid } from "ulid";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SequelizeRevision } from "../src/index.js";
 import { Project, ProjectSetting, User } from "./models.js";
 import "../src/sequelize-extension.js";
 import { AsyncLocalStorage } from "async_hooks";
 
-describe("SequelizeRevision", () => {
+describe.each([["serial"], ["uuid"], ["ulid"]])("SequelizeRevision (primaryKeyType: %s)", (primaryKeyType) => {
   let sequelize: Sequelize;
   let RevisionChange: any;
   let Revision: any;
   let user: User;
+  let primaryKeyLength: number;
 
   beforeEach(async () => {
     sequelize = new Sequelize({
@@ -18,13 +20,27 @@ describe("SequelizeRevision", () => {
       logging: false,
     });
 
+    let id;
+    let projectId;
+    if (primaryKeyType === "serial") {
+      projectId = { type: DataTypes.INTEGER, primaryKey: true };
+      id = { ...projectId, autoIncrement: true };
+      primaryKeyLength = 1;
+    } else if (primaryKeyType === "uuid") {
+      projectId = { type: DataTypes.UUID, primaryKey: true, defaultValue: DataTypes.UUIDV4 };
+      id = { ...projectId };
+      primaryKeyLength = 36;
+    } else if (primaryKeyType === "ulid") {
+      projectId = { type: DataTypes.STRING, primaryKey: true, defaultValue: ulid };
+      id = { ...projectId };
+      primaryKeyLength = 26;
+    } else {
+      throw new Error(`primaryKeyType: ${primaryKeyType} is not supported`);
+    }
+
     Project.init(
       {
-        id: {
-          type: DataTypes.INTEGER,
-          autoIncrement: true,
-          primaryKey: true,
-        },
+        id,
         name: {
           type: DataTypes.STRING,
         },
@@ -43,10 +59,7 @@ describe("SequelizeRevision", () => {
 
     ProjectSetting.init(
       {
-        project_id: {
-          type: DataTypes.INTEGER,
-          primaryKey: true,
-        },
+        project_id: projectId,
         key: {
           type: DataTypes.STRING,
           primaryKey: true,
@@ -61,11 +74,7 @@ describe("SequelizeRevision", () => {
 
     User.init(
       {
-        id: {
-          type: DataTypes.INTEGER,
-          autoIncrement: true,
-          primaryKey: true,
-        },
+        id,
         name: {
           type: DataTypes.STRING,
           allowNull: false,
@@ -82,6 +91,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
       });
       [Revision] = sequelizeRevision.defineModels();
@@ -359,6 +369,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions for upsert", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
       });
       [Revision] = sequelizeRevision.defineModels();
@@ -487,6 +498,7 @@ describe("SequelizeRevision", () => {
   describe("logging revision changes", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
@@ -541,7 +553,7 @@ describe("SequelizeRevision", () => {
         path: ["project_id"],
         rhs: project.id,
       });
-      expect(revisionChanges[2].diff).toEqual([{ added: true, count: 1, value: "1" }]);
+      expect(revisionChanges[2].diff).toEqual([{ added: true, count: primaryKeyLength, value: project.id.toString() }]);
       expect(revisionChanges[2].revisionId).toBe(revisions[1].id);
     });
 
@@ -728,6 +740,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions for JSON attributes", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         enableRevisionChangeModel: true,
       });
@@ -836,6 +849,7 @@ describe("SequelizeRevision", () => {
 
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         asyncLocalStorage,
         userModel: "User",
@@ -921,6 +935,7 @@ describe("SequelizeRevision", () => {
 
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         asyncLocalStorage,
         userModel: "User",
@@ -1028,6 +1043,7 @@ describe("SequelizeRevision", () => {
 
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         metaDataAsyncLocalStorage,
         metaDataFields: { userRole: false, server: false },
@@ -1175,6 +1191,7 @@ describe("SequelizeRevision", () => {
 
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         exclude,
       });
@@ -1213,6 +1230,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions for excludeed attributes for each model", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
       });
       [Revision] = sequelizeRevision.defineModels();
@@ -1250,6 +1268,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions with unstrict diff", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         enableStrictDiff: false,
       });
@@ -1288,6 +1307,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions with compression", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         enableMigration: true,
         enableCompression: true,
       });
@@ -1333,6 +1353,7 @@ describe("SequelizeRevision", () => {
   describe("using underscored table names and attributes", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         underscored: true,
         underscoredAttributes: true,
         tableName: "revisions",
@@ -1400,6 +1421,7 @@ describe("SequelizeRevision", () => {
   describe("logging revisions without json data type", () => {
     beforeEach(async () => {
       const sequelizeRevision = new SequelizeRevision(sequelize, {
+        primaryKeyType: primaryKeyType as "serial" | "uuid" | "ulid",
         useJsonDataType: false,
         enableMigration: true,
         enableRevisionChangeModel: true,
@@ -1420,11 +1442,11 @@ describe("SequelizeRevision", () => {
       const revisions = await Revision.findAll();
       expect(revisions.length).toBe(2);
 
-      expect(revisions[0].document).toBe('{"name":"sequelize-revision"}');
-      expect(revisions[0].documentIds).toBe('{"id":1}');
+      expect(revisions[0].document).toBe(JSON.stringify({ name: "sequelize-revision" }));
+      expect(revisions[0].documentIds).toBe(JSON.stringify({ id: project.id }));
 
-      expect(revisions[1].document).toBe('{"project_id":1,"key":"version","value":"1"}');
-      expect(revisions[1].documentIds).toBe('{"project_id":1,"key":"version"}');
+      expect(revisions[1].document).toBe(JSON.stringify({ project_id: project.id, key: "version", value: "1" }));
+      expect(revisions[1].documentIds).toBe(JSON.stringify({ project_id: project.id, key: "version" }));
     });
 
     it("has json data type in revision changes", async () => {
@@ -1435,17 +1457,19 @@ describe("SequelizeRevision", () => {
       const revisionChanges = await RevisionChange.findAll();
       expect(revisionChanges.length).toBe(4);
 
-      expect(revisionChanges[0].document).toBe('{"kind":"N","path":["name"],"rhs":"sequelize-revision"}');
-      expect(revisionChanges[0].diff).toBe('[{"count":18,"added":true,"value":"sequelize-revision"}]');
+      expect(revisionChanges[0].document).toBe(JSON.stringify({ kind: "N", path: ["name"], rhs: "sequelize-revision" }));
+      expect(revisionChanges[0].diff).toBe(JSON.stringify([{ count: 18, added: true, value: "sequelize-revision" }]));
 
-      expect(revisionChanges[1].document).toBe('{"kind":"N","path":["project_id"],"rhs":1}');
-      expect(revisionChanges[1].diff).toBe('[{"count":1,"added":true,"value":"1"}]');
+      expect(revisionChanges[1].document).toBe(JSON.stringify({ kind: "N", path: ["project_id"], rhs: project.id }));
+      expect(revisionChanges[1].diff).toBe(
+        JSON.stringify([{ count: primaryKeyLength, added: true, value: project.id.toString() }]),
+      );
 
-      expect(revisionChanges[2].document).toBe('{"kind":"N","path":["key"],"rhs":"version"}');
-      expect(revisionChanges[2].diff).toBe('[{"count":7,"added":true,"value":"version"}]');
+      expect(revisionChanges[2].document).toBe(JSON.stringify({ kind: "N", path: ["key"], rhs: "version" }));
+      expect(revisionChanges[2].diff).toBe(JSON.stringify([{ count: 7, added: true, value: "version" }]));
 
-      expect(revisionChanges[3].document).toBe('{"kind":"N","path":["value"],"rhs":"1"}');
-      expect(revisionChanges[3].diff).toBe('[{"count":1,"added":true,"value":"1"}]');
+      expect(revisionChanges[3].document).toBe(JSON.stringify({ kind: "N", path: ["value"], rhs: "1" }));
+      expect(revisionChanges[3].diff).toBe(JSON.stringify([{ count: 1, added: true, value: "1" }]));
     });
   });
 });
