@@ -382,13 +382,12 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         // in case of custom user models that are not 'userId'
         query[this.options.userIdAttribute] = this.options.asyncLocalStorage?.getStore() || opt.userId;
         query[this.documentIdAttribute] = instance[instance.constructor.primaryKeyAttribute];
-        query[this.documentIdsAttribute] = Object.keys(instance.constructor.primaryKeyAttributes).reduce(
-          (documentIds, i) => {
-            const attribute = instance.constructor.primaryKeyAttributes[i];
+        query[this.documentIdsAttribute] = instance.constructor.primaryKeyAttributes.reduce(
+          (documentIds: Record<string, unknown>, attribute: string) => {
             documentIds[attribute] = instance[attribute];
             return documentIds;
           },
-          {} as Record<string, unknown>,
+          {},
         );
         if (!this.options.useJsonDataType) {
           query[this.documentIdsAttribute] = JSON.stringify(query[this.documentIdsAttribute]);
