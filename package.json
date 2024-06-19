@@ -3,11 +3,20 @@
   "version": "9.0.0",
   "description": "Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with sequelize-typescript.",
   "type": "module",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "pnpm run build:esm && pnpm run build:cjs && pnpm run build:types",
+    "build:esm": "tsc -p tsconfig.build.esm.json",
+    "build:cjs": "tsc -p tsconfig.build.cjs.json",
+    "build:types": "tsc -p tsconfig.build.types.json --emitDeclarationOnly",
     "format": "prettier **/*.{md,ts,js,json} -w",
     "format:check": "prettier **/*.{md,ts,js,json} --check",
     "lint": "eslint **/*.{ts,js} --quiet",
