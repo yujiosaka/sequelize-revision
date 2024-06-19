@@ -1,6 +1,6 @@
 {
   "name": "sequelize-revision",
-  "version": "9.0.0",
+  "version": "9.1.0",
   "description": "Track revisions of your Sequelize models, revert them to any revision or restore them after being destroyed. Written in TypeScript and can be used with sequelize-typescript.",
   "type": "module",
   "exports": {

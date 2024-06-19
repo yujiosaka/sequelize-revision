@@ -1,3 +1,10 @@
+# [9.1.0](https://github.com/yujiosaka/sequelize-revision/compare/v9.0.0...v9.1.0) (2024-06-19)
+
+
+### Features
+
+* support dual package ([626cdeb](https://github.com/yujiosaka/sequelize-revision/commit/626cdeb5351df3c579a1a4179da0ae21e9a76ebf))
+
 # [9.0.0](https://github.com/yujiosaka/sequelize-revision/compare/v8.0.0...v9.0.0) (2024-06-18)
 
 
