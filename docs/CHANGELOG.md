@@ -1,3 +1,10 @@
+## [9.1.1](https://github.com/yujiosaka/sequelize-revision/compare/v9.1.0...v9.1.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* fix a bug of cjs not working ([28b6fbf](https://github.com/yujiosaka/sequelize-revision/commit/28b6fbf21d919b9bd592db12baaf6ac19a6e2ce0))
+
 # [9.1.0](https://github.com/yujiosaka/sequelize-revision/compare/v9.0.0...v9.1.0) (2024-06-19)
 
 
