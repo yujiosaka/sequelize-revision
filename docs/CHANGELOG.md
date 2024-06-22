@@ -1,3 +1,10 @@
+## [9.1.2](https://github.com/yujiosaka/sequelize-revision/compare/v9.1.1...v9.1.2) (2024-06-22)
+
+
+### Bug Fixes
+
+* synchronize trackRevision when enableMigration is disabled ([2cc82f7](https://github.com/yujiosaka/sequelize-revision/commit/2cc82f74bce3907edb10baf81f291424ec27d44e))
+
 ## [9.1.1](https://github.com/yujiosaka/sequelize-revision/compare/v9.1.0...v9.1.1) (2024-06-20)
 
 
