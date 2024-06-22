@@ -83,15 +83,32 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
     return [Revision] as any;
   }
 
-  public async trackRevision(model: ModelDefined<any, any>, options: { exclude?: string[] } = {}): Promise<void> {
+  public trackRevision(
+    model: ModelDefined<any, any>,
+    options: { exclude?: string[] } = {},
+  ): O["enableMigration"] extends true ? Promise<void> : void {
     debugConsole("track revisions on %s", model.name);
 
     this.addRevisionAttribute(model);
     if (this.options.enableMigration) {
-      await this.addRevisionColumn(model);
+      return this.addRevisionColumn(model).then(() => {
+        this.addHooks(model, options.exclude);
+      }) as O["enableMigration"] extends true ? Promise<void> : void;
     }
 
-    const modelExclude = options.exclude || [];
+    this.addHooks(model, options.exclude);
+    return undefined as O["enableMigration"] extends true ? Promise<void> : void;
+  }
+
+  /**
+   * Throw exceptions when the user identifier from asyncLocalStorage is not set or if the
+   * revisionAttribute was not loaded on the model.
+   */
+  public enableFailHard() {
+    this.failHard = true;
+  }
+
+  private addHooks(model: ModelDefined<any, any>, modelExclude: string[] = []) {
     model.addHook("beforeCreate", this.createBeforeHook("create", modelExclude));
     model.addHook("beforeDestroy", this.createBeforeHook("destroy", modelExclude));
     model.addHook("beforeUpdate", this.createBeforeHook("update", modelExclude));
@@ -108,14 +125,6 @@ export class SequelizeRevision<O extends SequelizeRevisionOptions> {
         model: model.name,
       },
     });
-  }
-
-  /**
-   * Throw exceptions when the user identifier from asyncLocalStorage is not set or if the
-   * revisionAttribute was not loaded on the model.
-   */
-  enableFailHard() {
-    this.failHard = true;
   }
 
   private getRevisionAttributes(): ModelAttributes {
